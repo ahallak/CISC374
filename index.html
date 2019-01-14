@@ -118,6 +118,9 @@
 			xaxis: {
 				ticks: '',
 				side: 'top',
+				showgrid: true,
+				showline: false,
+				showzeroline: false,
 				showticklabels: false
 			},
 			yaxis: {
@@ -126,6 +129,9 @@
 				width: 700,
 				height: 700,
 				autosize: false,
+				showgrid: true,
+				showline: false,
+				showzeroline: false,
 				showticklabels: false
 			}
 		};
@@ -133,8 +139,6 @@
 		for ( var i = 0; i < ROWS; i++ ) {
 			for ( var j = 0; j < COLS; j++ ) {
 				var result = {
-					xref: 'x1',
-					yref: 'y1',
 					x: j,
 					y: i,
 					text: matrix[i][j],
@@ -175,7 +179,7 @@
 		//repeat it all 
 		// Joy - not sure if this is the best way to do this,
 		//       but it'll work for now'
-		main();
+		//main();
 	}
 
 	/***************
