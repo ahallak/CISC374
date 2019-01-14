@@ -5,57 +5,71 @@
 <div id="tester" style="width:600px;height:250px;"></div>
 
 <body>
-	<div id="graph"></div>
+	<div id="table"></div>
 </body>
 
 
 <script>
+	/***************
+	 *  CONSTANTS  *
+	 ***************/
 
+	//sets the [default] range of values for random number generation
+	MIN = 0;
+	MAX = 10;
+
+	//sets the [default] size of our matrix of data
+	ROWS = 10;
+	COLS = 10;
+
+	// generates a random int between min and max
 	function randGen(min, max)
 	{
 		return Math.round(Math.random() * (max-min) + min);
 	}
 	
-	var valueArray = [];
-	
-	for (i = 0; i < 10; i++)
-		{
-			temp = [];
-			for (j = 0; j < 10; j++)
+	// Generates a rows by cols matrix of ints between min and max
+	function matrixGen(rows, cols, min, max) 
+	{
+		var matrix = [];
+		
+		for (i = 0; i < rows; i++)
 			{
-				temp.push(randGen(0,1));
+				temp = [];
+				for (j = 0; j < cols; j++)
+				{
+					temp.push(randGen(0,1));
+				}
+				matrix.push(temp);
 			}
-			valueArray.push(temp);
-		}
-			
-	//alert(valueArray);
+		
+		return matrix;
+	}
+	
+	//plots a table of default size in the default range	
+	function plotRandTable() {
+		var valueArray = matrixGen(ROWS, COLS, MIN, MAX);
 
-	/*
-	TESTER = document.getElementById('tester');
-	Plotly.plot( TESTER, [{
-	x: [1, 2, 3, 4, 5],
-	y: [1, 2, 4, 8, 16] }], {
-	margin: { t: 0 } } );
-	*/
+		var tableParams = [{
+				type: 'table',
+				header: {
+					values: [],
+					align: "center",
+					line: {width: 1, color: 'black'},
+					fill: {color: "white"},
+					font: {family: "Arial", size: 12, color: "white"}
+				},
+			cells: {
+				values: valueArray,
+				align: "center",
+				line: {color: "black", width: 1},
+				font: {family: "Arial", size: 11, color: ["black"]}
+				}
+		}]
 
+		Plotly.plot('table', tableParams);
+	}
 
-	var data = [{
-  		type: 'table',
-  		header: {
-    		values: [],
-    		align: "center",
-    		line: {width: 1, color: 'black'},
-    		fill: {color: "white"},
-    		font: {family: "Arial", size: 12, color: "white"}
-  		},
-  	cells: {
-    	values: valueArray,
-    	align: "center",
-    	line: {color: "black", width: 1},
-    	font: {family: "Arial", size: 11, color: ["black"]}
-  		}
-	}]
-
-Plotly.plot('graph', data);
+	plotRandTable();
 
 </script>
