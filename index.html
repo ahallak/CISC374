@@ -14,8 +14,9 @@
 <script>
 	//about javascript synchronous/asynchronous
 	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
-	//as a note, setTimeout does NOT stop the code below it from running. 
+	//as a note, setTimeout does NOT stop the code below it from running.
 	window.onload = function() {
+		//create basic table, put in graph id
 		basicTable = function() {
 			function randGen(min, max) {
 				return Math.round(Math.random() * (max-min) + min);
@@ -71,20 +72,7 @@
 		}
 
 		clearVis = function() {
-			//get current graph
-			var graphobj = document.getElementById('graph');
-			//get parent of graph
-			var parent = graphobj.parentNode;
-			//remove current graph
-			parent.removeChild(graphobj);
-			//create new graph element with id = graph
-			var newgraph = document.createElement("div");
-			var att = document.createAttribute("id");
-			att.value = "graph";
-			newgraph.setAttributeNode(att);
-			//add new element to parent
-			parent.appendChild(newgraph);
-
+			Plotly.purge('graph');
 			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
 		}
 
