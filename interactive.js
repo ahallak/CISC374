@@ -16,12 +16,17 @@ const COLS = 10;
 //sets how long the visuals will be displayed
 const WAIT_MILLIS = 5000;
 
-//name of graph
-const NAME = 'table';
+//name of the DOM element where we're putting our visuals
+const PLOT_NAME = 'graph';
+
+//defines which graphs we plot
 const PLOTS = [
-    {name: 'table', plot: plotRandTable},
-    {name: 'annotated heatmap', plot: plotRandAnnotatedHeatmap}
+    plotRandTable,
+    plotRandAnnotatedHeatmap
 ];
+
+//for ordering async events
+const EVENT_QUEUE = [];
 
 /***************
  *  FUNCTIONS  *
@@ -53,6 +58,8 @@ function matrixGen(co, ro, min, max)
 
 //plots a table of default size in the default range
 function plotRandTable(name) {
+    console.log('plotRandTable called');    
+
     //original
     //var valueArray = matrixGen(COLS, ROWS, MIN, MAX);
 
@@ -88,6 +95,8 @@ function plotRandTable(name) {
 
 //plots an annotated heatmap that looks like a table
 function plotRandAnnotatedHeatmap(name) {
+    console.log('plotRandAnnotatedHeatmap called');
+
     //the actual values we want to display
     var matrix = matrixGen(ROWS, COLS, MIN, MAX);
 
@@ -155,14 +164,14 @@ function plotRandAnnotatedHeatmap(name) {
 //clears visuals and adds the option to give user input
 //input may need to be reworked/given more names, 
 //etc to put it in a table
-clearVis = function(name, plotNext) 
+clearVis = function(name) 
 {
     Plotly.purge(name);
-    document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput(plotNext);\">Submit</button></div>";
+    document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
 }
 
 //when the user clicks submit, this function is called.
-offerInput = function(plotNext) {
+offerInput = function() {
     var inputobj = document.getElementById('usertext').value;
     //some sort of input cleansing???
     //do something with this thing... record it?
@@ -174,42 +183,44 @@ offerInput = function(plotNext) {
     //       but it'll work for now'
     //main();
 
-    //plot the next visual
-    plotNext();
+    //run the next event we have queued up
+    var runNext = EVENT_QUEUE.shift();
+    if (runNext != null) {
+        runNext();
+    }
+}
+
+function plotVis(plot) {
+    plot(PLOT_NAME);
+
+    //delete the plot after WAIT_MILLIS
+    setTimeout(() => clearVis(PLOT_NAME),
+                WAIT_MILLIS);
 }
 
 /***************
  *  MAIN BODY  *
  ***************/
 
-function plotList(plotNum, list) {
-    //don't overstep the bounds of a plot
-    if (plotNum >= list.length) {
-        return;
+function main() {
+    //add all of our ploting events to the queue
+    for (var i = 0; i < PLOTS.length; i++) {
+        var plot = PLOTS[i];
+        EVENT_QUEUE.push(() => plotVis(plot));
     }
 
-    console.log('plotting ' + plotNum);
-    name = list[plotNum].name;
-    plot = list[plotNum].plot;
+    console.log(PLOTS);
+    console.log(EVENT_QUEUE);
 
-    plot(name);
+    //start the first event
+    var runNext = EVENT_QUEUE.shift();
+    runNext();
 
-    //delete the plot after WAIT_MILLIS
-    setTimeout(() => clearVis(name, 
-                              //makes sure the next plot
-                              //is called recusively
-                              () => plotList(plotNum + 1, list)),
-                WAIT_MILLIS);
-}
-
-function main() {
-    //starts plotNext rolling
-    plotList(0, PLOTS);
 
     /* 
-    plotRandAnnotatedHeatmap(NAME);	
+    plotRandAnnotatedHeatmap(PLOT_NAME);	
     
     //delete the table after WAIT_MILLIS
-    setTimeout(() => clearVis(NAME), WAIT_MILLIS);
+    setTimeout(() => clearVis(PLOT_NAME), WAIT_MILLIS);
     */
 }
