@@ -5,68 +5,104 @@
 <div id="tester" style="width:600px;height:250px;"></div>
 
 <body>
+	<div id="userinput"></div>
 	<div id="graph"></div>
+	<div id="graph2"></div>
 </body>
 
 
 <script>
+	//about javascript synchronous/asynchronous
+	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
+	//as a note, setTimeout does NOT stop the code below it from running. 
+	window.onload = function() {
+		basicTable = function() {
+			function randGen(min, max) {
+				return Math.round(Math.random() * (max-min) + min);
+			}
 
-	function randGen(min, max)
-	{
-		return Math.round(Math.random() * (max-min) + min);
-	}
+			var valueArray = [];
 
-	var valueArray = [];
+			for (i = 0; i < 10; i++) {
+				temp = [];
+				for (j = 0; j < 9; j++)	{
+					temp.push(randGen(0,1));
+				}
+				valueArray.push(temp);
+			}
 
-	for (i = 0; i < 10; i++)
-	{
-		temp = [];
-		for (j = 0; j < 9; j++)
-		{
-			temp.push(randGen(0,1));
+			var valueHeader = [];
+			for (j = 0; j < 10; j++) {
+				valueHeader.push([randGen(0,1)]);
+			}
+
+			//var valueHeader = valueArray.splice(0,1);//removes first array and makes it in header
+
+			//alert(valueArray);
+
+			/*
+			TESTER = document.getElementById('tester');
+			Plotly.plot( TESTER, [{
+			x: [1, 2, 3, 4, 5],
+			y: [1, 2, 4, 8, 16] }], {
+			margin: { t: 0 } } );
+			*/
+
+
+			var data = [{
+				type: 'table',
+				header: {
+					values: valueHeader,
+					align: "center",
+					line: {color: 'black', width: 1},
+					fill: {color: "white"},
+					font: {family: "Arial", size: 11, color: "black"}
+				},
+				cells: {
+					values: valueArray,
+					align: "center",
+					line: {color: "black", width: 1},
+					fill: {color: "white"},
+					font: {family: "Arial", size: 11, color: ["black"]}
+				}
+			}];
+
+			Plotly.plot('graph', data);
 		}
-		valueArray.push(temp);
-	}
 
-	var valueHeader = [];
-	for (j = 0; j < 10; j++)
-	{
-		valueHeader.push([randGen(0,1)]);
-	}
-	console.log(valueHeader);
+		clearVis = function() {
+			//get current graph
+			var graphobj = document.getElementById('graph');
+			//get parent of graph
+			var parent = graphobj.parentNode;
+			//remove current graph
+			parent.removeChild(graphobj);
+			//create new graph element with id = graph
+			var newgraph = document.createElement("div");
+			var att = document.createAttribute("id");
+			att.value = "graph";
+			newgraph.setAttributeNode(att);
+			//add new element to parent
+			parent.appendChild(newgraph);
 
-
-	//var valueHeader = valueArray.splice(0,1);//removes first array and makes it in header
-
-	//alert(valueArray);
-
-	/*
-	TESTER = document.getElementById('tester');
-	Plotly.plot( TESTER, [{
-	x: [1, 2, 3, 4, 5],
-	y: [1, 2, 4, 8, 16] }], {
-	margin: { t: 0 } } );
-	*/
-
-
-	var data = [{
-		type: 'table',
-		header: {
-			values: valueHeader,
-			align: "center",
-			line: {color: 'black', width: 1},
-			fill: {color: "white"},
-			font: {family: "Arial", size: 11, color: "black"}
-		},
-		cells: {
-			values: valueArray,
-			align: "center",
-			line: {color: "black", width: 1},
-			fill: {color: "white"},
-			font: {family: "Arial", size: 11, color: ["black"]}
+			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
 		}
-	}]
 
-	Plotly.plot('graph', data);
+		offerInput = function() {
+			var inputobj = document.getElementById('usertext').value;
+			//some sort of input cleansing???
+			//do something with this thing... record it?
+			alert(inputobj);
+			document.getElementById('userinput').innerHTML = "";
+			setTimeout('basicTable();', 1000);//I like this delay to let the user reset after inputting.
+			setTimeout('clearVis();', 5000);
+		}
+
+		basicTable();
+		setTimeout('clearVis();', 4000);
+
+	};
+
+
 
 </script>
