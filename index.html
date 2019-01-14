@@ -158,9 +158,9 @@
 	//clears visuals and adds the option to give user input
 	//input may need to be reworked/given more names, 
 	//etc to put it in a table
-	clearVis = function() 
+	clearVis = function(name) 
 	{
-		Plotly.purge(NAME);
+		Plotly.purge(name);
 		document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
 	}
 
@@ -172,7 +172,9 @@
 		alert(inputobj);
 		document.getElementById('userinput').innerHTML = "";
 
-		//repeat it all
+		//repeat it all 
+		// Joy - not sure if this is the best way to do this,
+		//       but it'll work for now'
 		main();
 	}
 
@@ -181,11 +183,10 @@
 	 ***************/
 
 	function main() {	
-		//plotRandTable(NAME);
 		plotRandAnnotatedHeatmap(NAME);	
 
 		//delete the table after WAIT_MILLIS
-		setTimeout(clearVis, WAIT_MILLIS);
+		setTimeout(() => clearVis(NAME), WAIT_MILLIS);
 	}
 
 	main();
