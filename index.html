@@ -96,8 +96,9 @@
 		Plotly.plot(name, tableParams);
 	}
 
+	//plots an annotated heatmap that looks like a table
 	function plotRandAnnotatedHeatmap(name) {
-		//the actual data
+		//the actual values we want to display
 		var matrix = matrixGen(ROWS, COLS, MIN, MAX);
  
 		//make all the backgrounds pure white (can change later)
@@ -113,6 +114,7 @@
 			showscale: false
 		}];
 
+		//set up all the settings for the heatmap
 		var layout = {
 			annotations: [],
 			xaxis: {
@@ -136,6 +138,7 @@
 			}
 		};
 
+		//set all the actual annotations
 		for ( var i = 0; i < ROWS; i++ ) {
 			for ( var j = 0; j < COLS; j++ ) {
 				var result = {
@@ -179,7 +182,7 @@
 		//repeat it all 
 		// Joy - not sure if this is the best way to do this,
 		//       but it'll work for now'
-		//main();
+		main();
 	}
 
 	/***************
