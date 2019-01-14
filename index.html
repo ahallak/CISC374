@@ -78,14 +78,8 @@
 	}
 
 	function plotRandAnnotatedHeatmap(name) {
-		//column indices: just runs from 0 to COLS - 1
-		var xValues = [...Array(COLS).keys()];
-
-		//row indices: just runs from 0 to ROWS - 1
-		var yValues = [...Array(ROWS).keys()];
-
 		//the actual data
-		var zValues = matrixGen(ROWS, COLS, MIN, MAX);
+		var matrix = matrixGen(ROWS, COLS, MIN, MAX);
  
 		//make all the backgrounds pure white (can change later)
 		var colorscaleValue = [
@@ -94,9 +88,7 @@
 		];
 
 		var data = [{
-			x: xValues,
-			y: yValues,
-			z: zValues,
+			z: matrix,
 			type: 'heatmap',
 			colorscale: colorscaleValue,
 			showscale: false
@@ -118,14 +110,14 @@
 			}
 		};
 
-		for ( var i = 0; i < yValues.length; i++ ) {
-			for ( var j = 0; j < xValues.length; j++ ) {
+		for ( var i = 0; i < ROWS; i++ ) {
+			for ( var j = 0; j < COLS; j++ ) {
 				var result = {
 					xref: 'x1',
 					yref: 'y1',
-					x: xValues[j],
-					y: yValues[i],
-					text: zValues[i][j],
+					x: j,
+					y: i,
+					text: matrix[i][j],
 					font: {
 						family: 'Arial',
 						size: 12,
