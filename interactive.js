@@ -1,6 +1,7 @@
 //about javascript synchronous/asynchronous
 //https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
 //as a note, setTimeout does NOT stop the code below it from running.
+
 /***************
  *  CONSTANTS  *
  ***************/
@@ -58,7 +59,7 @@ function matrixGen(co, ro, min, max)
 
 //plots a table of default size in the default range
 function plotRandTable(name) {
-    console.log('plotRandTable called');    
+    //console.log('plotRandTable called');    
 
     //original
     //var valueArray = matrixGen(COLS, ROWS, MIN, MAX);
@@ -95,7 +96,7 @@ function plotRandTable(name) {
 
 //plots an annotated heatmap that looks like a table
 function plotRandAnnotatedHeatmap(name) {
-    console.log('plotRandAnnotatedHeatmap called');
+    //console.log('plotRandAnnotatedHeatmap called');
 
     //the actual values we want to display
     var matrix = matrixGen(ROWS, COLS, MIN, MAX);
@@ -205,17 +206,14 @@ function plotVis(plot) {
 function main() {
     //add all of our ploting events to the queue
     for (let i = 0; i < PLOTS.length; i++) {
-        let plot = PLOTS[i];
-        EVENT_QUEUE.push(() => plotVis(plot));
+        EVENT_QUEUE.push(() => plotVis(PLOTS[i]));
     }
 
-    console.log(PLOTS);
-    console.log(EVENT_QUEUE);
+    //console.log(PLOTS);
+    //console.log(EVENT_QUEUE);
 
     //start the first event
-    var runNext = EVENT_QUEUE.shift();
-    runNext();
-
+    EVENT_QUEUE.shift()();
 
     /* 
     plotRandAnnotatedHeatmap(PLOT_NAME);	
