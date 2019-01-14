@@ -43,10 +43,10 @@ function matrixGen(co, ro, min, max)
 {
     var matrix = [];
 
-    for (i = 0; i < co; i++)
+    for (let i = 0; i < co; i++)
         {
             temp = [];
-            for (j = 0; j < ro; j++)
+            for (let j = 0; j < ro; j++)
             {
                 temp.push(randGen(min,max));
             }
@@ -138,8 +138,8 @@ function plotRandAnnotatedHeatmap(name) {
     };
 
     //set all the actual annotations
-    for ( var i = 0; i < ROWS; i++ ) {
-        for ( var j = 0; j < COLS; j++ ) {
+    for (let i = 0; i < ROWS; i++) {
+        for (let j = 0; j < COLS; j++) {
             var result = {
                 x: j,
                 y: i,
@@ -204,8 +204,8 @@ function plotVis(plot) {
 
 function main() {
     //add all of our ploting events to the queue
-    for (var i = 0; i < PLOTS.length; i++) {
-        var plot = PLOTS[i];
+    for (let i = 0; i < PLOTS.length; i++) {
+        let plot = PLOTS[i];
         EVENT_QUEUE.push(() => plotVis(plot));
     }
 
