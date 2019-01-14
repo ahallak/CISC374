@@ -22,6 +22,9 @@
 	ROWS = 10;
 	COLS = 10;
 
+	//sets how long the visuals will be displayed
+	WAIT_MILLIS = 5000;
+
 	/***************
 	 *  FUNCTIONS  *
 	 ***************/
@@ -50,8 +53,8 @@
 		return matrix;
 	}
 	
-	//plots a table of default size in the default range	
-	function plotRandTable() {
+	//plots a table of default size in the default range
+	function plotRandTable(name) {
 		var valueArray = matrixGen(ROWS, COLS, MIN, MAX);
 
 		var tableParams = [{
@@ -71,13 +74,18 @@
 				}
 		}]
 
-		Plotly.plot('table', tableParams);
+		Plotly.plot(name, tableParams);
 	}
+
+	
 
 	/***************
 	 *  MAIN BODY  *
 	 ***************/
+	const NAME = 'table';
+	plotRandTable(NAME);
 	
-	plotRandTable();
+	//delete the table after WAIT_MILLIS
+	setTimeout(() => Plotly.purge(NAME), WAIT_MILLIS);
 
 </script>
