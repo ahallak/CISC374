@@ -6,8 +6,7 @@
 
 <body>
 	<div id="userinput"></div>
-	<div id="graph"></div>
-	<div id="graph2"></div>
+	<div id="table"></div>
 </body>
 
 
@@ -16,6 +15,106 @@
 	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
 	//as a note, setTimeout does NOT stop the code below it from running.
 	window.onload = function() {
+	/***************
+	 *  CONSTANTS  *
+	 ***************/
+
+	//sets the [default] range of values for random number generation
+	const MIN = 0;
+	const MAX = 1;
+
+	//sets the [default] size of our matrix of data
+	const ROWS = 10;
+	const COLS = 10;
+
+	//sets how long the visuals will be displayed
+	const WAIT_MILLIS = 5000;
+
+	//name of graph
+	const NAME = 'table';
+
+
+	/***************
+	 *  FUNCTIONS  *
+	 ***************/
+
+	// generates a random int between min and max
+	function randGen(min, max)
+	{
+		return Math.round(Math.random() * (max-min) + min);
+	}
+
+	// Generates a rows by cols matrix of ints between min and max
+	function matrixGen(rows, cols, min, max)
+	{
+		var matrix = [];
+
+		for (i = 0; i < rows; i++)
+			{
+				temp = [];
+				for (j = 0; j < cols; j++)
+				{
+					temp.push(randGen(min,max));
+				}
+				matrix.push(temp);
+			}
+
+		return matrix;
+	}
+
+	//plots a table of default size in the default range
+	function plotRandTable(name) {
+		var valueArray = matrixGen(ROWS, COLS, MIN, MAX);
+
+		var tableParams = [{
+				type: 'table',
+				header: {
+					values: [],
+					align: "center",
+					line: {width: 1, color: 'black'},
+					fill: {color: "white"},
+					font: {family: "Arial", size: 12, color: "white"}
+				},
+			cells: {
+				values: valueArray,
+				align: "center",
+				line: {color: "black", width: 1},
+				font: {family: "Arial", size: 11, color: ["black"]}
+				}
+		}]
+
+		Plotly.plot(name, tableParams);
+	}
+
+	//clears visuals and adds the option to give user input
+	//input may need to be reworked/given more names, etc to put it in a table
+	clearVis = function() {
+		Plotly.purge(NAME);
+		document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
+	}
+
+	//when the user clicks submit, this function is called.
+	offerInput = function() {
+		var inputobj = document.getElementById('usertext').value;
+		//some sort of input cleansing???
+		//do something with this thing... record it?
+		alert(inputobj);
+		document.getElementById('userinput').innerHTML = "";
+		plotRandTable(NAME);
+		setTimeout('clearVis();', WAIT_MILLIS);
+	}
+
+	/***************
+	 *  MAIN BODY  *
+	 ***************/
+	plotRandTable(NAME);
+
+	//delete the table after WAIT_MILLIS
+	setTimeout('clearVis();', WAIT_MILLIS);
+
+};
+/////////////
+/*
 		//create basic table, put in graph id
 		basicTable = function() {
 			function randGen(min, max) {
@@ -37,19 +136,6 @@
 				valueHeader.push([randGen(0,1)]);
 			}
 
-			//var valueHeader = valueArray.splice(0,1);//removes first array and makes it in header
-
-			//alert(valueArray);
-
-			/*
-			TESTER = document.getElementById('tester');
-			Plotly.plot( TESTER, [{
-			x: [1, 2, 3, 4, 5],
-			y: [1, 2, 4, 8, 16] }], {
-			margin: { t: 0 } } );
-			*/
-
-
 			var data = [{
 				type: 'table',
 				header: {
@@ -69,28 +155,6 @@
 			}];
 
 			Plotly.plot('graph', data);
-		}
-
-		clearVis = function() {
-			Plotly.purge('graph');
-			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
-		}
-
-		offerInput = function() {
-			var inputobj = document.getElementById('usertext').value;
-			//some sort of input cleansing???
-			//do something with this thing... record it?
-			alert(inputobj);
-			document.getElementById('userinput').innerHTML = "";
-			setTimeout('basicTable();', 1000);//I like this delay to let the user reset after inputting.
-			setTimeout('clearVis();', 5000);
-		}
-
-		basicTable();
-		setTimeout('clearVis();', 4000);
-
-	};
-
-
+		}*/
 
 </script>
