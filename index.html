@@ -16,7 +16,7 @@
 
 	//sets the [default] range of values for random number generation
 	MIN = 0;
-	MAX = 10;
+	MAX = 1;
 
 	//sets the [default] size of our matrix of data
 	ROWS = 10;
@@ -42,7 +42,7 @@
 				temp = [];
 				for (j = 0; j < cols; j++)
 				{
-					temp.push(randGen(0,1));
+					temp.push(randGen(min,max));
 				}
 				matrix.push(temp);
 			}
