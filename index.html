@@ -19,42 +19,42 @@
 	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
 	//as a note, setTimeout does NOT stop the code below it from running.
 	window.onload = function() {
-	/***************
-	 *  CONSTANTS  *
-	 ***************/
+		/***************
+		*  CONSTANTS  *
+		***************/
 
-	//sets the [default] range of values for random number generation
-	const MIN = 0;
-	const MAX = 1;
+		//sets the [default] range of values for random number generation
+		const MIN = 0;
+		const MAX = 1;
 
-	//sets the [default] size of our matrix of data
-	const ROWS = 10;
-	const COLS = 10;
+		//sets the [default] size of our matrix of data
+		const ROWS = 10;
+		const COLS = 10;
 
-	//sets how long the visuals will be displayed
-	//const WAIT_MILLIS = 5000;
-	const WAIT_MILLIS = 2000;
+		//sets how long the visuals will be displayed
+		//const WAIT_MILLIS = 5000;
+		const WAIT_MILLIS = 2000;
 
-	//name of graph
-	const NAME = 'table';
+		//name of graph
+		const NAME = 'table';
 
 
-	/***************
-	 *  FUNCTIONS  *
-	 ***************/
+		/***************
+		*  FUNCTIONS  *
+		***************/
 
-	// generates a random int between min and max
-	function randGen(min, max)
-	{
-		return Math.round(Math.random() * (max-min) + min);
-	}
+		// generates a random int between min and max
+		function randGen(min, max)
+		{
+			return Math.round(Math.random() * (max-min) + min);
+		}
 
-	// Generates a rows by cols matrix of ints between min and max
-	function matrixGen(co, ro, min, max)
-	{
-		var matrix = [];
+		// Generates a rows by cols matrix of ints between min and max
+		function matrixGen(co, ro, min, max)
+		{
+			var matrix = [];
 
-		for (i = 0; i < co; i++)
+			for (i = 0; i < co; i++)
 			{
 				temp = [];
 				for (j = 0; j < ro; j++)
@@ -64,35 +64,35 @@
 				matrix.push(temp);
 			}
 
-		return matrix;
-	}
-
-	//plots a table of default size in the default range
-	function plotRandTable(name) {
-		//original
-		//var valueArray = matrixGen(COLS, ROWS, MIN, MAX);
-
-		//avoiding empty header
-		var valueArray = matrixGen(COLS, ROWS-1, MIN, MAX);
-		var valueHeader = [];
-		for (j = 0; j < 10; j++) {
-			valueHeader.push([randGen(0,1)]);
+			return matrix;
 		}
-		var freqs = [0,0];
-		valueArray.forEach(function(subarr) {
-			subarr.forEach(function(el) {
-				freqs[el]++;
+
+		//plots a table of default size in the default range
+		function plotRandTable(name) {
+			//original
+			//var valueArray = matrixGen(COLS, ROWS, MIN, MAX);
+
+			//avoiding empty header
+			var valueArray = matrixGen(COLS, ROWS-1, MIN, MAX);
+			var valueHeader = [];
+			for (j = 0; j < 10; j++) {
+				valueHeader.push([randGen(0,1)]);
+			}
+			var freqs = [0,0];
+			valueArray.forEach(function(subarr) {
+				subarr.forEach(function(el) {
+					freqs[el]++;
+				});
 			});
-		});
-		if (freqs[0] < freqs[1]) {
-			correctResponses.push("1");
-		} else if (freqs[0] > freqs[1]) {
-			correctResponses.push("0");
-		} else {
-			correctResponses.push("="); //figure out a better system for ties
-		}
+			if (freqs[0] < freqs[1]) {
+				correctResponses.push("1");
+			} else if (freqs[0] > freqs[1]) {
+				correctResponses.push("0");
+			} else {
+				correctResponses.push("="); //figure out a better system for ties
+			}
 
-		var tableParams = [{
+			var tableParams = [{
 				type: 'table',
 				header: {
 					//values: [], //original
@@ -103,85 +103,85 @@
 					font: {family: "Arial", size: 11, color: "black"},
 					height: 20
 				},
-			cells: {
-				values: valueArray,
-				align: "center",
-				line: {color: "black", width: 1},
-				font: {family: "Arial", size: 11, color: ["black"]},
-				height: 20
-			}
-		}];
+				cells: {
+					values: valueArray,
+					align: "center",
+					line: {color: "black", width: 1},
+					font: {family: "Arial", size: 11, color: ["black"]},
+					height: 20
+				}
+			}];
 
-		Plotly.plot(name, tableParams);
-		document.getElementById('directions').innerHTML = "<div>Find the mode (the most common number) in the graph below. </div>";
+			Plotly.plot(name, tableParams);
+			document.getElementById('directions').innerHTML = "<div>Find the mode (the most common number) in the graph below. </div>";
 
-	}
+		}
 
-	//clears visuals and adds the option to give user input
-	//input may need to be reworked/given more names, etc to put it in a table
-	clearVis = function() {
-		Plotly.purge(NAME);
-		document.getElementById('directions').innerHTML = "";
-		document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
-		document.getElementById('endgame').innerHTML = "<button onclick=\"endGame();\">Submit and end game</button>";
-	}
+		//clears visuals and adds the option to give user input
+		//input may need to be reworked/given more names, etc to put it in a table
+		clearVis = function() {
+			Plotly.purge(NAME);
+			document.getElementById('directions').innerHTML = "";
+			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
+			document.getElementById('endgame').innerHTML = "<button onclick=\"endGame();\">Submit and end game</button>";
+		}
 
-	//when the user clicks submit, this function is called.
-	offerInput = function() {
-		var inputobj = document.getElementById('usertext').value;
-		//some sort of input cleansing???
-		responses.push(inputobj);
-		//alert(inputobj);
-		document.getElementById('endgame').innerHTML = "";
-		document.getElementById('userinput').innerHTML = "";
+		//when the user clicks submit, this function is called.
+		offerInput = function() {
+			var inputobj = document.getElementById('usertext').value;
+			//some sort of input cleansing???
+			responses.push(inputobj);
+			//alert(inputobj);
+			document.getElementById('endgame').innerHTML = "";
+			document.getElementById('userinput').innerHTML = "";
 
-		//repeat it all
-		plotRandTable(NAME);
-		setTimeout('clearVis();', WAIT_MILLIS);
-	}
+			//repeat it all
+			plotRandTable(NAME);
+			setTimeout('clearVis();', WAIT_MILLIS);
+		}
 
-	endGame = function() {
-		var inputobj = document.getElementById('usertext').value;
-		//some sort of input cleansing???
-		responses.push(inputobj);
-		//alert(inputobj);
-		document.getElementById('userinput').innerHTML = "";
-		document.getElementById('endgame').innerHTML = "";
-		document.getElementById('directions').innerHTML = "";
-		//todo: save and display results
+		endGame = function() {
+			var inputobj = document.getElementById('usertext').value;
+			//some sort of input cleansing???
+			responses.push(inputobj);
+			//alert(inputobj);
+			document.getElementById('userinput').innerHTML = "";
+			document.getElementById('endgame').innerHTML = "";
+			document.getElementById('directions').innerHTML = "";
+			//todo: save and display results
 
-		var resultTableParams = [{
+			var resultTableParams = [{
 				type: 'table',
 				header: {
-					values: [["correct responses"], ["your responses"]], //original
+					values: [["Correct responses"], ["Your responses"]], //original
 					align: "center",
 					line: {width: 1, color: 'black'},
-					fill: {color: "white"},
-					font: {family: "Arial", size: 11, color: "black"},
-					height: 20
+					fill: {color: "gray"},
+					font: {family: "Arial", size: 12, color: "white"},
+					height: 28
 				},
-			cells: {
-				values: [correctResponses,responses],
-				align: "center",
-				line: {color: "black", width: 1},
-				font: {family: "Arial", size: 11, color: ["black"]},
-				height: 20
-			}
-		}];
+				cells: {
+					values: [correctResponses,responses],
+					align: "center",
+					line: {color: "black", width: 1},
+					font: {family: "Arial", size: 11, color: ["black"]},
+					height: 20
+				}
+			}];
 
-		Plotly.plot(results, resultTableParams);
-		//document.getElementById('results').innerHTML = "(todo: add results table)";
+			Plotly.plot(results, resultTableParams);
+			//document.getElementById('results').innerHTML = "(todo: add results table)";
 
-	}
+		}
 
-	/***************
-	 *  MAIN BODY  *
-	 ***************/
-	 var responses = [];
-	 var correctResponses = [];
-	plotRandTable(NAME);
-	setTimeout('clearVis();', WAIT_MILLIS);
+		/***************
+		*  MAIN BODY  *
+		***************/
+		var responses = [];
+		var correctResponses = [];
+		plotRandTable(NAME);
+		setTimeout('clearVis();', WAIT_MILLIS);
 
-};
+	};
 
 </script>
