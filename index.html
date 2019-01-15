@@ -6,7 +6,11 @@
 
 <body>
 	<div id="userinput"></div>
+	<div id="directions"></div>
+	<div id="endgame"></div>
+	<div id="results"></div>
 	<div id="table"></div>
+	<div id="userinput"></div>
 </body>
 
 
@@ -28,7 +32,8 @@
 	const COLS = 10;
 
 	//sets how long the visuals will be displayed
-	const WAIT_MILLIS = 5000;
+	//const WAIT_MILLIS = 5000;
+	const WAIT_MILLIS = 2000;
 
 	//name of graph
 	const NAME = 'table';
@@ -73,6 +78,19 @@
 		for (j = 0; j < 10; j++) {
 			valueHeader.push([randGen(0,1)]);
 		}
+		var freqs = [0,0];
+		valueArray.forEach(function(subarr) {
+			subarr.forEach(function(el) {
+				freqs[el]++;
+			});
+		});
+		if (freqs[0] < freqs[1]) {
+			correctResponses.push("1");
+		} else if (freqs[0] > freqs[1]) {
+			correctResponses.push("0");
+		} else {
+			correctResponses.push("="); //figure out a better system for ties
+		}
 
 		var tableParams = [{
 				type: 'table',
@@ -92,24 +110,29 @@
 				font: {family: "Arial", size: 11, color: ["black"]},
 				height: 20
 			}
-		}]
+		}];
 
 		Plotly.plot(name, tableParams);
+		document.getElementById('directions').innerHTML = "<div>Find the mode (the most common number) in the graph below. </div>";
+
 	}
 
 	//clears visuals and adds the option to give user input
 	//input may need to be reworked/given more names, etc to put it in a table
 	clearVis = function() {
 		Plotly.purge(NAME);
+		document.getElementById('directions').innerHTML = "";
 		document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
+		document.getElementById('endgame').innerHTML = "<button onclick=\"endGame();\">Submit and end game</button>";
 	}
 
 	//when the user clicks submit, this function is called.
 	offerInput = function() {
 		var inputobj = document.getElementById('usertext').value;
 		//some sort of input cleansing???
-		//do something with this thing... record it?
-		alert(inputobj);
+		responses.push(inputobj);
+		//alert(inputobj);
+		document.getElementById('endgame').innerHTML = "";
 		document.getElementById('userinput').innerHTML = "";
 
 		//repeat it all
@@ -117,12 +140,46 @@
 		setTimeout('clearVis();', WAIT_MILLIS);
 	}
 
+	endGame = function() {
+		var inputobj = document.getElementById('usertext').value;
+		//some sort of input cleansing???
+		responses.push(inputobj);
+		//alert(inputobj);
+		document.getElementById('userinput').innerHTML = "";
+		document.getElementById('endgame').innerHTML = "";
+		document.getElementById('directions').innerHTML = "";
+		//todo: save and display results
+
+		var resultTableParams = [{
+				type: 'table',
+				header: {
+					values: [["correct responses"], ["your responses"]], //original
+					align: "center",
+					line: {width: 1, color: 'black'},
+					fill: {color: "white"},
+					font: {family: "Arial", size: 11, color: "black"},
+					height: 20
+				},
+			cells: {
+				values: [correctResponses,responses],
+				align: "center",
+				line: {color: "black", width: 1},
+				font: {family: "Arial", size: 11, color: ["black"]},
+				height: 20
+			}
+		}];
+
+		Plotly.plot(results, resultTableParams);
+		//document.getElementById('results').innerHTML = "(todo: add results table)";
+
+	}
+
 	/***************
 	 *  MAIN BODY  *
 	 ***************/
+	 var responses = [];
+	 var correctResponses = [];
 	plotRandTable(NAME);
-
-	//delete the table after WAIT_MILLIS
 	setTimeout('clearVis();', WAIT_MILLIS);
 
 };
