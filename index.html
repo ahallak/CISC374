@@ -38,6 +38,9 @@
 		//name of graph
 		const NAME = 'table';
 
+		
+		const RESPONSES = [];
+		const CORRECT_RESPONSES = [];
 
 		/***************
 		*  FUNCTIONS  *
@@ -85,11 +88,11 @@
 				});
 			});
 			if (freqs[0] < freqs[1]) {
-				correctResponses.push("1");
+				CORRECT_RESPONSES.push("1");
 			} else if (freqs[0] > freqs[1]) {
-				correctResponses.push("0");
+				CORRECT_RESPONSES.push("0");
 			} else {
-				correctResponses.push("="); //figure out a better system for ties
+				CORRECT_RESPONSES.push("="); //figure out a better system for ties
 			}
 
 			var tableParams = [{
@@ -130,7 +133,7 @@
 		offerInput = function() {
 			var inputobj = document.getElementById('usertext').value;
 			//some sort of input cleansing???
-			responses.push(inputobj);
+			RESPONSES.push(inputobj);
 			//alert(inputobj);
 			document.getElementById('endgame').innerHTML = "";
 			document.getElementById('userinput').innerHTML = "";
@@ -143,7 +146,7 @@
 		endGame = function() {
 			var inputobj = document.getElementById('usertext').value;
 			//some sort of input cleansing???
-			responses.push(inputobj);
+			RESPONSES.push(inputobj);
 			//alert(inputobj);
 			document.getElementById('userinput').innerHTML = "";
 			document.getElementById('endgame').innerHTML = "";
@@ -153,7 +156,7 @@
 			var resultTableParams = [{
 				type: 'table',
 				header: {
-					values: [["Correct responses"], ["Your responses"]], //original
+					values: [["Correct Responses"], ["Your Responses"]], //original
 					align: "center",
 					line: {width: 1, color: 'black'},
 					fill: {color: "gray"},
@@ -161,7 +164,7 @@
 					height: 28
 				},
 				cells: {
-					values: [correctResponses,responses],
+					values: [CORRECT_RESPONSES,RESPONSES],
 					align: "center",
 					line: {color: "black", width: 1},
 					font: {family: "Arial", size: 11, color: ["black"]},
@@ -177,11 +180,12 @@
 		/***************
 		*  MAIN BODY  *
 		***************/
-		var responses = [];
-		var correctResponses = [];
-		plotRandTable(NAME);
-		setTimeout('clearVis();', WAIT_MILLIS);
+		function main() {
+			plotRandTable(NAME);
+			setTimeout('clearVis();', WAIT_MILLIS);
+		}
 
+		main();
 	};
 
 </script>
