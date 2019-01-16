@@ -9,8 +9,10 @@
 	<div id="directions"></div>
 	<div id="displayResponses"></div>
 	<div id="resumeGame"></div>
+	<div id="endGame"></div>
 	<div id="restartGame"></div>
 	<div id="results"></div>
+	<div id="score"></div>
 	<div id="table"></div>
 	<div id="userinput"></div>
 </body>
@@ -127,7 +129,7 @@
 			Plotly.purge(NAME);
 			document.getElementById('directions').innerHTML = "";
 			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
-			document.getElementById('displayResponses').innerHTML = "<button onclick=\"endGame();\">Submit and show responses</button>";
+			document.getElementById('displayResponses').innerHTML = "<button onclick=\"displayResponses();\">Submit and show responses</button>";
 		}
 
 		//when the user submits a guess, this function is called.
@@ -148,50 +150,82 @@
 			}
 		}
 
+		//shows the player a comparision between their responses
+		//and the correct ones
+		displayResponses = function() {
+				var inputobj = document.getElementById('usertext').value;
+				if (inputobj.length > 2) {
+						alert("Enter a realistic guess.");
+				}	else {
+						//some sort of input cleansing???
+						RESPONSES.push(inputobj);
+						
+						//alert(inputobj);
+						document.getElementById('userinput').innerHTML = "";
+						document.getElementById('displayResponses').innerHTML = "";
+						document.getElementById('directions').innerHTML = "";
+						document.getElementById('resumeGame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
+						document.getElementById('endGame').innerHTML = "<button onclick='endGame()'>End game</button>";
+
+						var resultTableParams = [{
+								type: 'table',
+								header: {
+										values: [["Correct responses"], ["Your responses"]],
+										align: "center",
+										line: {width: 1, color: 'black'},
+										fill: {color: "gray"},
+										font: {family: "Arial", size: 12, color: "white"},
+										height: 28
+								},
+								cells: {
+										values: [CORRECT_RESPONSES,RESPONSES],
+										align: "center",
+										line: {color: "black", width: 1},
+										font: {family: "Arial", size: 11, color: ["black"]},
+										height: 20
+								}
+						}];
+
+						Plotly.plot(RESULT_NAME, resultTableParams);
+				}
+		}
+	
+		//when the user resumes the game, this function is called.
+		resumeGame = function() {
+				document.getElementById('resumeGame').innerHTML = "";
+				document.getElementById('endGame').innerHTML = "";
+				Plotly.purge(RESULT_NAME);
+				
+				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
+				setTimeout(plotRandTable, WAIT_MILLIS);
+				setTimeout(clearVis, WAIT_MILLIS*2);
+		}
+		
 		//when the user ends the game, this function is called.
 		endGame = function() {
-			var inputobj = document.getElementById('usertext').value;
-			if (inputobj.length > 2) {
-				alert("Enter a realistic guess.");
-			}	else {
-				//some sort of input cleansing???
-				RESPONSES.push(inputobj);
+				document.getElementById('resumeGame').innerHTML = "";
+				document.getElementById('endGame').innerHTML = "";
+				Plotly.purge(RESULT_NAME);
 				
-				//alert(inputobj);
-				document.getElementById('userinput').innerHTML = "";
-				document.getElementById('displayResponses').innerHTML = "";
-				document.getElementById('directions').innerHTML = "";
-				document.getElementById('resumeGame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
-				document.getElementById('restartGame').innerHTML = "<button onclick='restartGame()'>Restart game</button>";
+				//let their score be their success rate, for now
+				let score = 0;
+				for (i in RESPONSES) {
+						if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
+								score++;
+						}
+				}
+				score = 100.0 * score / RESPONSES.length;
 
-				var resultTableParams = [{
-					type: 'table',
-					header: {
-						values: [["Correct responses"], ["Your responses"]],
-						align: "center",
-						line: {width: 1, color: 'black'},
-						fill: {color: "gray"},
-						font: {family: "Arial", size: 12, color: "white"},
-						height: 28
-					},
-					cells: {
-						values: [CORRECT_RESPONSES,RESPONSES],
-						align: "center",
-						line: {color: "black", width: 1},
-						font: {family: "Arial", size: 11, color: ["black"]},
-						height: 20
-					}
-				}];
-
-				Plotly.plot(RESULT_NAME, resultTableParams);
-			}
+				document.getElementById('score').innerHTML = 
+						"You had an accuracy of " + score + "%.";
+				document.getElementById('restartGame').innerHTML = 
+						"<button onclick='restartGame()'>Restart game</button>";
 		}
 
 		restartGame = function() {
 				//clear out the screen
-				document.getElementById('resumeGame').innerHTML = "";
 				document.getElementById('restartGame').innerHTML = "";
-				Plotly.purge(RESULT_NAME);
+				document.getElementById('score').innerHTML = ""; 
 
 				//clear out the response lists
 				RESPONSES.length = 0;
@@ -200,17 +234,6 @@
 				//continue on with the new game
 				main();
 		}	
-	
-		//when the user resumes the game, this function is called.
-		resumeGame = function() {
-			document.getElementById('resumeGame').innerHTML = "";
-			document.getElementById('restartGame').innerHTML = "";
-			Plotly.purge(RESULT_NAME);
-			
-			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-			setTimeout(plotRandTable, WAIT_MILLIS);
-			setTimeout(clearVis, WAIT_MILLIS*2);
-		}
 
 		/***************
 		*  MAIN BODY  *
