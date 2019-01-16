@@ -8,6 +8,7 @@
 	<div id="userinput"></div>
 	<div id="directions"></div>
 	<div id="endgame"></div>
+	<div id="resumegame"></div>
 	<div id="results"></div>
 	<div id="table"></div>
 	<div id="userinput"></div>
@@ -33,10 +34,11 @@
 
 		//sets how long the visuals will be displayed
 		//const WAIT_MILLIS = 5000;
-		const WAIT_MILLIS = 2000;
+		const WAIT_MILLIS = 3500;
 
 		//name of graph
 		const NAME = 'table';
+		const RESULT_NAME = 'results';
 
 
 		/***************
@@ -68,17 +70,17 @@
 		}
 
 		//plots a table of default size in the default range
-		function plotRandTable(name) {
+		plotRandTable = function() {
 			//original
-			//var valueArray = matrixGen(COLS, ROWS, MIN, MAX);
+			//let valueArray = matrixGen(COLS, ROWS, MIN, MAX);
 
 			//avoiding empty header
-			var valueArray = matrixGen(COLS, ROWS-1, MIN, MAX);
-			var valueHeader = [];
+			let valueArray = matrixGen(COLS, ROWS-1, MIN, MAX);
+			let valueHeader = [];
 			for (j = 0; j < 10; j++) {
 				valueHeader.push([randGen(0,1)]);
 			}
-			var freqs = [0,0];
+			let freqs = [0,0];
 			valueArray.forEach(function(subarr) {
 				subarr.forEach(function(el) {
 					freqs[el]++;
@@ -89,10 +91,10 @@
 			} else if (freqs[0] > freqs[1]) {
 				correctResponses.push("0");
 			} else {
-				correctResponses.push("="); //figure out a better system for ties
+				correctResponses.push("="); //TODO figure out a better system for ties
 			}
 
-			var tableParams = [{
+			let tableParams = [{
 				type: 'table',
 				header: {
 					//values: [], //original
@@ -112,9 +114,7 @@
 				}
 			}];
 
-			Plotly.plot(name, tableParams);
-			document.getElementById('directions').innerHTML = "<div>Find the mode (the most common number) in the graph below. </div>";
-
+			Plotly.plot(NAME, tableParams);
 		}
 
 		//clears visuals and adds the option to give user input
@@ -126,52 +126,68 @@
 			document.getElementById('endgame').innerHTML = "<button onclick=\"endGame();\">Submit and end game</button>";
 		}
 
-		//when the user clicks submit, this function is called.
+		//when the user submits a guess, this function is called.
 		offerInput = function() {
-			var inputobj = document.getElementById('usertext').value;
-			//some sort of input cleansing???
-			responses.push(inputobj);
-			//alert(inputobj);
-			document.getElementById('endgame').innerHTML = "";
-			document.getElementById('userinput').innerHTML = "";
+			let inputobj = document.getElementById('usertext').value;
+			//TODO some sort of input sanitization???
+			if (inputobj.length > 2) {
+				alert("Enter a realistic guess.");
+			} else {
+				responses.push(inputobj);
+				document.getElementById('endgame').innerHTML = "";
+				document.getElementById('userinput').innerHTML = "";
 
-			//repeat it all
-			plotRandTable(NAME);
-			setTimeout('clearVis();', WAIT_MILLIS);
+				//repeat it all
+				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
+				setTimeout('plotRandTable();', WAIT_MILLIS);
+				setTimeout('clearVis();', WAIT_MILLIS*2);
+			}
 		}
 
+		//when the user ends the game, this function is called.
 		endGame = function() {
-			var inputobj = document.getElementById('usertext').value;
-			//some sort of input cleansing???
-			responses.push(inputobj);
-			//alert(inputobj);
-			document.getElementById('userinput').innerHTML = "";
-			document.getElementById('endgame').innerHTML = "";
-			document.getElementById('directions').innerHTML = "";
-			//todo: save and display results
+			let inputobj = document.getElementById('usertext').value;
+			//TODO some sort of input sanitization?
+			if (inputobj.length > 2) {
+				alert("Enter a realistic guess.");
+			}	else {
+				responses.push(inputobj);
+				//removes all buttons but the resume button
+				document.getElementById('userinput').innerHTML = "";
+				document.getElementById('endgame').innerHTML = "";
+				document.getElementById('directions').innerHTML = "";
+				document.getElementById('resumegame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
 
-			var resultTableParams = [{
-				type: 'table',
-				header: {
-					values: [["Correct responses"], ["Your responses"]], //original
-					align: "center",
-					line: {width: 1, color: 'black'},
-					fill: {color: "gray"},
-					font: {family: "Arial", size: 12, color: "white"},
-					height: 28
-				},
-				cells: {
-					values: [correctResponses,responses],
-					align: "center",
-					line: {color: "black", width: 1},
-					font: {family: "Arial", size: 11, color: ["black"]},
-					height: 20
-				}
-			}];
+				let resultTableParams = [{
+					type: 'table',
+					header: {
+						values: [["Correct responses"], ["Your responses"]], 
+						align: "center",
+						line: {width: 1, color: 'black'},
+						fill: {color: "gray"},
+						font: {family: "Arial", size: 12, color: "white"},
+						height: 28
+					},
+					cells: {
+						values: [correctResponses,responses],
+						align: "center",
+						line: {color: "black", width: 1},
+						font: {family: "Arial", size: 11, color: ["black"]},
+						height: 20
+					}
+				}];
 
-			Plotly.plot(results, resultTableParams);
-			//document.getElementById('results').innerHTML = "(todo: add results table)";
+				Plotly.plot(RESULT_NAME, resultTableParams);
+			}
+		}
 
+		//when the user resumes the game, this function is called.
+		resumeGame = function() {
+			document.getElementById('resumegame').innerHTML = "";
+			Plotly.purge(RESULT_NAME);
+			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
+			setTimeout('plotRandTable();', WAIT_MILLIS);
+			setTimeout('clearVis();', WAIT_MILLIS*2);
 		}
 
 		/***************
@@ -179,8 +195,9 @@
 		***************/
 		var responses = [];
 		var correctResponses = [];
-		plotRandTable(NAME);
-		setTimeout('clearVis();', WAIT_MILLIS);
+		document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
+		setTimeout('plotRandTable();', WAIT_MILLIS);
+		setTimeout('clearVis();', WAIT_MILLIS*2);
 
 	};
 
