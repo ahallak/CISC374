@@ -9,6 +9,7 @@
 	<div id="directions"></div>
 	<div id="endgame"></div>
 	<div id="resumegame"></div>
+	<div id="restartgame"></div>
 	<div id="results"></div>
 	<div id="table"></div>
 	<div id="userinput"></div>
@@ -157,11 +158,12 @@
 				document.getElementById('endgame').innerHTML = "";
 				document.getElementById('directions').innerHTML = "";
 				document.getElementById('resumegame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
+				document.getElementById('restartgame').innerHTML = "<button onclick=\"restartGame();\">Restart game</button>";
 
 				let resultTableParams = [{
 					type: 'table',
 					header: {
-						values: [["Correct responses"], ["Your responses"]], 
+						values: [["Correct responses"], ["Your responses"]],
 						align: "center",
 						line: {width: 1, color: 'black'},
 						fill: {color: "gray"},
@@ -184,7 +186,20 @@
 		//when the user resumes the game, this function is called.
 		resumeGame = function() {
 			document.getElementById('resumegame').innerHTML = "";
+			document.getElementById('restartgame').innerHTML = "";
 			Plotly.purge(RESULT_NAME);
+			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
+			setTimeout('plotRandTable();', WAIT_MILLIS);
+			setTimeout('clearVis();', WAIT_MILLIS*2);
+		}
+
+		//when the user restarts the game, this function is called.
+		restartGame = function() {
+			document.getElementById('resumegame').innerHTML = "";
+			document.getElementById('restartgame').innerHTML = "";
+			Plotly.purge(RESULT_NAME);
+			responses = [];
+			correctResponses = [];
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
 			setTimeout('plotRandTable();', WAIT_MILLIS);
 			setTimeout('clearVis();', WAIT_MILLIS*2);
