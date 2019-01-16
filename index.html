@@ -1,20 +1,19 @@
 <head>
+	 <link rel="stylesheet" type="text/css" href="style.css">
 	<script src="plotly-latest.min.js"></script>
 </head>
 
 <!--<div id="tester" style="width:600px;height:250px;"></div>-->
 
 <body>
-	<div id="userinput"></div>
-	<div id="directions"></div>
+	<div id="maintitle">Recharted</div>
+	<div class="section">
+		<p id="directions"></p>
+	</div>
 	<div id="displayResponses"></div>
-	<div id="resumeGame"></div>
-	<div id="endGame"></div>
-	<div id="restartGame"></div>
 	<div id="results"></div>
 	<div id="score"></div>
 	<div id="table"></div>
-	<div id="userinput"></div>
 </body>
 
 
@@ -43,7 +42,7 @@
 		const NAME = 'table';
 		const RESULT_NAME = 'results';
 
-		
+
 		const RESPONSES = [];
 		const CORRECT_RESPONSES = [];
 
@@ -127,9 +126,7 @@
 		//input may need to be reworked/given more names, etc to put it in a table
 		clearVis = function() {
 			Plotly.purge(NAME);
-			document.getElementById('directions').innerHTML = "";
-			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
-			document.getElementById('displayResponses').innerHTML = "<button onclick=\"displayResponses();\">Submit and show responses</button>";
+			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button><button onclick=\"displayResponses();\">Submit and show responses</button>";
 		}
 
 		//when the user submits a guess, this function is called.
@@ -140,9 +137,6 @@
 				alert("Enter a realistic guess.");
 			} else {
 				RESPONSES.push(inputobj);
-				document.getElementById('displayResponses').innerHTML = "";
-				document.getElementById('userinput').innerHTML = "";
-
 				//repeat it all
 				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
 				setTimeout('plotRandTable();', WAIT_MILLIS);
@@ -159,13 +153,10 @@
 				}	else {
 						//some sort of input cleansing???
 						RESPONSES.push(inputobj);
-						
+
 						//alert(inputobj);
-						document.getElementById('userinput').innerHTML = "";
 						document.getElementById('displayResponses').innerHTML = "";
-						document.getElementById('directions').innerHTML = "";
-						document.getElementById('resumeGame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
-						document.getElementById('endGame').innerHTML = "<button onclick='endGame()'>End game</button>";
+						document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button><button onclick='endGame()'>End game</button>";
 
 						var resultTableParams = [{
 								type: 'table',
@@ -189,24 +180,20 @@
 						Plotly.plot(RESULT_NAME, resultTableParams);
 				}
 		}
-	
+
 		//when the user resumes the game, this function is called.
 		resumeGame = function() {
-				document.getElementById('resumeGame').innerHTML = "";
-				document.getElementById('endGame').innerHTML = "";
 				Plotly.purge(RESULT_NAME);
-				
 				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
 				setTimeout(plotRandTable, WAIT_MILLIS);
 				setTimeout(clearVis, WAIT_MILLIS*2);
 		}
-		
+
 		//when the user ends the game, this function is called.
 		endGame = function() {
-				document.getElementById('resumeGame').innerHTML = "";
-				document.getElementById('endGame').innerHTML = "";
+				document.getElementById('directions').innerHTML = "";
 				Plotly.purge(RESULT_NAME);
-				
+
 				//let their score be their success rate, for now
 				let score = 0;
 				for (i in RESPONSES) {
@@ -216,34 +203,32 @@
 				}
 				score = 100.0 * score / RESPONSES.length;
 
-				document.getElementById('score').innerHTML = 
+				document.getElementById('score').innerHTML =
 						"You had an accuracy of " + score + "%.";
-				document.getElementById('restartGame').innerHTML = 
+				document.getElementById('directions').innerHTML =
 						"<button onclick='restartGame()'>Restart game</button>";
 		}
 
 		restartGame = function() {
 				//clear out the screen
-				document.getElementById('restartGame').innerHTML = "";
-				document.getElementById('score').innerHTML = ""; 
-
+				document.getElementById('score').innerHTML = "";
 				//clear out the response lists
 				RESPONSES.length = 0;
 				CORRECT_RESPONSES.length = 0;
-				
+
 				//continue on with the new game
 				main();
-		}	
+		}
 
 		/***************
 		*  MAIN BODY  *
 		***************/
-		function main() {	
+		function main() {
 			//display instructions
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-			
+
 			//start first round after WAIT_MILLIS
-			setTimeout(plotRandTable, WAIT_MILLIS);	
+			setTimeout(plotRandTable, WAIT_MILLIS);
 			setTimeout(clearVis, WAIT_MILLIS*2);
 		}
 

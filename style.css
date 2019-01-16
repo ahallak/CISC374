@@ -1,0 +1,22 @@
+#maintitle {
+  font-size: 72px;
+  text-decoration: underline;
+  text-align: center;
+  color: midnightblue
+}
+
+.section {
+  background-color: powderblue;
+  border: solid 1px black;
+  margin: 2em;
+  border-radius: .5em;
+}
+
+body {
+  background-color: azure; /*sets your background color - check out some more here http://davidbau.com/colors/ */
+  text-align: left;
+}
+
+p {
+  margin: 1em;
+}
