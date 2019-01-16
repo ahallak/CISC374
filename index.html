@@ -8,10 +8,8 @@
 	<div id="userinput"></div>
 	<div id="directions"></div>
 	<div id="endgame"></div>
-	<div id="restart"></div>
-	<!--<div id="resumegame"></div>-->
-	<div id="resumegame"></div>
-	<div id="restartgame"></div>
+	<div id="resumeGame"></div>
+	<div id="restartGame"></div>
 	<div id="results"></div>
 	<div id="table"></div>
 	<div id="userinput"></div>
@@ -163,9 +161,8 @@
 				document.getElementById('userinput').innerHTML = "";
 				document.getElementById('endgame').innerHTML = "";
 				document.getElementById('directions').innerHTML = "";
-				//document.getElementById('resumegame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
-				document.getElementById('restart').innerHTML = "<button onclick='reset()'>Restart game</button>";
-				//todo: save and display results
+				document.getElementById('resumeGame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
+				document.getElementById('restartGame').innerHTML = "<button onclick='restartGame()'>Restart game</button>";
 
 				var resultTableParams = [{
 					type: 'table',
@@ -187,13 +184,13 @@
 				}];
 
 				Plotly.plot(RESULT_NAME, resultTableParams);
-				//document.getElementById('results').innerHTML = "(todo: add results table)";
 			}
 		}
 
-		reset = function() {
+		restartGame = function() {
 				//clear out the screen
-				document.getElementById('restart').innerHTML = "";
+				document.getElementById('resumeGame').innerHTML = "";
+				document.getElementById('restartGame').innerHTML = "";
 				Plotly.purge(RESULT_NAME);
 
 				//clear out the response lists
@@ -206,12 +203,13 @@
 	
 		//when the user resumes the game, this function is called.
 		resumeGame = function() {
-			document.getElementById('resumegame').innerHTML = "";
-			document.getElementById('restartgame').innerHTML = "";
+			document.getElementById('resumeGame').innerHTML = "";
+			document.getElementById('restartGame').innerHTML = "";
 			Plotly.purge(RESULT_NAME);
+			
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-			setTimeout('plotRandTable();', WAIT_MILLIS);
-			setTimeout('clearVis();', WAIT_MILLIS*2);
+			setTimeout(plotRandTable, WAIT_MILLIS);
+			setTimeout(clearVis, WAIT_MILLIS*2);
 		}
 
 		/***************
