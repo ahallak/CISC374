@@ -7,7 +7,7 @@
 <body>
 	<div id="userinput"></div>
 	<div id="directions"></div>
-	<div id="endgame"></div>
+	<div id="displayResponses"></div>
 	<div id="resumeGame"></div>
 	<div id="restartGame"></div>
 	<div id="results"></div>
@@ -127,7 +127,7 @@
 			Plotly.purge(NAME);
 			document.getElementById('directions').innerHTML = "";
 			document.getElementById('userinput').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button></div>";
-			document.getElementById('endgame').innerHTML = "<button onclick=\"endGame();\">Submit and end game</button>";
+			document.getElementById('displayResponses').innerHTML = "<button onclick=\"endGame();\">Submit and show responses</button>";
 		}
 
 		//when the user submits a guess, this function is called.
@@ -138,7 +138,7 @@
 				alert("Enter a realistic guess.");
 			} else {
 				RESPONSES.push(inputobj);
-				document.getElementById('endgame').innerHTML = "";
+				document.getElementById('displayResponses').innerHTML = "";
 				document.getElementById('userinput').innerHTML = "";
 
 				//repeat it all
@@ -159,7 +159,7 @@
 				
 				//alert(inputobj);
 				document.getElementById('userinput').innerHTML = "";
-				document.getElementById('endgame').innerHTML = "";
+				document.getElementById('displayResponses').innerHTML = "";
 				document.getElementById('directions').innerHTML = "";
 				document.getElementById('resumeGame').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button>";
 				document.getElementById('restartGame').innerHTML = "<button onclick='restartGame()'>Restart game</button>";
