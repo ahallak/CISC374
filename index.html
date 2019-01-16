@@ -8,6 +8,7 @@
 	<div id="userinput"></div>
 	<div id="directions"></div>
 	<div id="endgame"></div>
+	<div id="restart"></div>
 	<div id="results"></div>
 	<div id="table"></div>
 	<div id="userinput"></div>
@@ -147,10 +148,12 @@
 			var inputobj = document.getElementById('usertext').value;
 			//some sort of input cleansing???
 			RESPONSES.push(inputobj);
+			
 			//alert(inputobj);
 			document.getElementById('userinput').innerHTML = "";
 			document.getElementById('endgame').innerHTML = "";
 			document.getElementById('directions').innerHTML = "";
+			document.getElementById('restart').innerHTML = "<button onclick='reset()'>Restart game</button>";
 			//todo: save and display results
 
 			var resultTableParams = [{
@@ -177,12 +180,26 @@
 
 		}
 
+		reset = function() {
+				//clear out the screen
+				document.getElementById('restart').innerHTML = "";
+				Plotly.purge(results);
+
+				//clear out the response lists
+				RESPONSES.length = 0;
+				CORRECT_RESPONSES.length = 0;
+				
+				//continue on with the new game
+				main();
+		}
+
 		/***************
 		*  MAIN BODY  *
 		***************/
-		function main() {
+		function main() {	
+			//begin the first round
 			plotRandTable(NAME);
-			setTimeout('clearVis();', WAIT_MILLIS);
+			setTimeout(clearVis, WAIT_MILLIS);
 		}
 
 		main();
