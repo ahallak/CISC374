@@ -22,7 +22,7 @@
 	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
 	//as a note, setTimeout does NOT stop the code below it from running.
 	window.onload = function() {
-		/***************
+	 /***************
 		*  CONSTANTS  *
 		***************/
 
@@ -45,53 +45,81 @@
 		//arrays for tracking the responses given
 		const RESPONSES = [];
 		const CORRECT_RESPONSES = [];
+	
+	 /***************
+		*   CLASSES   *
+		***************/
+		
+		//encapsilates information about an event to place in the queue
+		function Event(run, shouldReadyNext) {
+				//0 argument function to be run by EVENT_QUEUE
+				this.run = run;
 
+				//boolean indicating whether or not to ready the function after
+				//this in EVENT_QUEUE to be run
+				this.shouldReadyNext = shouldReadyNext;
+		}
+		
 		//used to invoke asynchronus events in the proper order
-		const EVENT_QUEUE = {
-			events: [],
+		function EventQueue() {
+			self = this; 
 			
+			this.events = [];
+   		
 			//sets the next event in the queue to run after WAIT_MILLIS
-			readyNext: function() {
-					setTimeout(this.runNext, WAIT_MILLIS);
-			},
+			this.readyNext = function() {
+				//fill up the queue if it's empty
+				if (self.events[0] == null) {
+					self.populate();
+				}	
+
+				setTimeout(self.runNext, WAIT_MILLIS);
+			};
 
 			//runs the next function, and then readies the one after it,
 			//if indicated
-			runNext: function() {
-				let currentEvent = this.events.shift();
-				if (currentEvent == null) {
-					
-				} else {
+			this.runNext = function() {
+				let currentEvent = self.events.shift();
+				
+				if (currentEvent != null) {
 					//run the current event	
 					currentEvent.run();
 
 					if (currentEvent.shouldReadyNext) {
-						this.readyNext();
+						self.readyNext();
 					}
 				}
+			};
+
+			//adds a new event to the queue
+			this.addEvent = function(newEvent)	{
+				self.events.push(newEvent);
+			};
+
+			//clears the queue of all events
+			this.clear = function() {
+				self.events.length = 0;
+			};
+
+			//adds a call the each of the PLOTS to the queue
+			this.populate = function() {	
+				for (i in PLOTS) {
+					//NOTE: we don't need to wait for input when plotting,
+					//      but we do after clearing the plot
+
+					//add a plot to the queue...
+					EVENT_QUEUE.addEvent(new Event(PLOTS[i], true));
+					
+					//...and a call to clear it
+					EVENT_QUEUE.addEvent(new Event(clearVis, false));
+				}
 			}
-		};
+		}
 
 		/***************
 		*  FUNCTIONS  *
 		***************/
 		
-		//TODO: someone who knows their way around doing psuedo-classes/OOP
-		//      in javascript should remake EVENT_QUEUE and createEvent as
-		//      proper psuedo-classes (prototypes?) 
-
-		//factory function for making Events
-		function createEvent(run, readyNext) {
-			return {
-				//0 argument function to be run by EVENT_QUEUE
-				run: run,
-
-				//boolean indicating whether or not to ready the function after
-				//this in EVENT_QUEUE to be run
-				shouldReadyNext 
-			};
-		}
-
 		// generates a random int between min and max
 		function randGen(min, max)
 		{
@@ -120,6 +148,8 @@
 		plotRandTable = function() {
 			//original
 			//let valueArray = matrixGen(COLS, ROWS, MIN, MAX);
+		
+			console.log("ploting table");
 
 			//avoiding empty header
 			let valueArray = matrixGen(COLS, ROWS-1, MIN, MAX);
@@ -181,8 +211,10 @@
 				RESPONSES.push(inputobj);
 				//repeat it all
 				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-				setTimeout('plotRandTable();', WAIT_MILLIS);
-				setTimeout('clearVis();', WAIT_MILLIS*2);
+				//setTimeout('plotRandTable();', WAIT_MILLIS);
+				//setTimeout('clearVis();', WAIT_MILLIS*2);
+
+				EVENT_QUEUE.readyNext();
 			}
 		}
 
@@ -227,8 +259,10 @@
 		resumeGame = function() {
 				Plotly.purge(RESULT_NAME);
 				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-				setTimeout(plotRandTable, WAIT_MILLIS);
-				setTimeout(clearVis, WAIT_MILLIS*2);
+				//setTimeout(plotRandTable, WAIT_MILLIS);
+				//setTimeout(clearVis, WAIT_MILLIS*2);
+
+				EVENT_QUEUE.readyNext();
 		}
 
 		//when the user ends the game, this function is called.
@@ -254,9 +288,13 @@
 		restartGame = function() {
 				//clear out the screen
 				document.getElementById('score').innerHTML = "";
+				
 				//clear out the response lists
 				RESPONSES.length = 0;
 				CORRECT_RESPONSES.length = 0;
+
+				//clear out the event queue
+				EVENT_QUEUE.clear();
 
 				//continue on with the new game
 				main();
@@ -274,14 +312,20 @@
 		const PLOTS = [
 			plotRandTable
 		];
+		var EVENT_QUEUE = new EventQueue();
 
 		function main() {
+			//EVENT_QUEUE.populate();
+
 			//display instructions
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
 
+			//start running events from the queue
+			EVENT_QUEUE.readyNext();			
+
 			//start first round after WAIT_MILLIS
-			setTimeout(plotRandTable, WAIT_MILLIS);
-			setTimeout(clearVis, WAIT_MILLIS*2);
+			//setTimeout(plotRandTable, WAIT_MILLIS);
+			//setTimeout(clearVis, WAIT_MILLIS*2);
 		}
 
 		main();
