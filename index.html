@@ -42,13 +42,55 @@
 		const NAME = 'table';
 		const RESULT_NAME = 'results';
 
-
+		//arrays for tracking the responses given
 		const RESPONSES = [];
 		const CORRECT_RESPONSES = [];
+
+		//used to invoke asynchronus events in the proper order
+		const EVENT_QUEUE = {
+			events: [],
+			
+			//sets the next event in the queue to run after WAIT_MILLIS
+			readyNext: function() {
+					setTimeout(this.runNext, WAIT_MILLIS);
+			},
+
+			//runs the next function, and then readies the one after it,
+			//if indicated
+			runNext: function() {
+				let currentEvent = this.events.shift();
+				if (currentEvent == null) {
+					
+				} else {
+					//run the current event	
+					currentEvent.run();
+
+					if (currentEvent.shouldReadyNext) {
+						this.readyNext();
+					}
+				}
+			}
+		};
 
 		/***************
 		*  FUNCTIONS  *
 		***************/
+		
+		//TODO: someone who knows their way around doing psuedo-classes/OOP
+		//      in javascript should remake EVENT_QUEUE and createEvent as
+		//      proper psuedo-classes (prototypes?) 
+
+		//factory function for making Events
+		function createEvent(run, readyNext) {
+			return {
+				//0 argument function to be run by EVENT_QUEUE
+				run: run,
+
+				//boolean indicating whether or not to ready the function after
+				//this in EVENT_QUEUE to be run
+				shouldReadyNext 
+			};
+		}
 
 		// generates a random int between min and max
 		function randGen(min, max)
@@ -220,9 +262,19 @@
 				main();
 		}
 
+		
 		/***************
 		*  MAIN BODY  *
 		***************/
+	
+		//NOTE: PLOTS has to be defined after the definition of all 
+		//      the plotting functions in order to avoid errors
+	
+		//list of ploting functions
+		const PLOTS = [
+			plotRandTable
+		];
+
 		function main() {
 			//display instructions
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
