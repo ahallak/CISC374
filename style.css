@@ -2,7 +2,8 @@
   font-size: 72px;
   text-decoration: underline;
   text-align: center;
-  color: midnightblue
+  color: midnightblue;
+  outline-style: dotted;
 }
 
 .section {
@@ -20,5 +21,3 @@ body {
 p {
   margin: 1em;
 }
-
-p.dotted {outline-style: dotted;}
