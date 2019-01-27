@@ -6,7 +6,7 @@
 <!--<div id="tester" style="width:600px;height:250px;"></div>-->
 
 <body>
-	<p class="dotted" id="maintitle">Recharted</p>
+	<p class="dotted" id="maintitle">Data Visualization</p>
 	<div class="section">
 		<p id="directions"></p>
 	</div>
@@ -45,11 +45,11 @@
 		//arrays for tracking the responses given
 		const RESPONSES = [];
 		const CORRECT_RESPONSES = [];
-	
+
 	 /***************
 		*   CLASSES   *
 		***************/
-		
+
 		//encapsilates information about an event to place in the queue
 		function Event(run, shouldReadyNext) {
 				//0 argument function to be run by EVENT_QUEUE
@@ -59,19 +59,19 @@
 				//this in EVENT_QUEUE to be run
 				this.shouldReadyNext = shouldReadyNext;
 		}
-		
+
 		//used to invoke asynchronus events in the proper order
 		function EventQueue() {
-			self = this; 
-			
+			self = this;
+
 			this.events = [];
-   		
+
 			//sets the next event in the queue to run after WAIT_MILLIS
 			this.readyNext = function() {
 				//fill up the queue if it's empty
 				if (self.events[0] == null) {
 					self.populate();
-				}	
+				}
 
 				setTimeout(self.runNext, WAIT_MILLIS);
 			};
@@ -80,9 +80,9 @@
 			//if indicated
 			this.runNext = function() {
 				let currentEvent = self.events.shift();
-				
+
 				if (currentEvent != null) {
-					//run the current event	
+					//run the current event
 					currentEvent.run();
 
 					if (currentEvent.shouldReadyNext) {
@@ -102,14 +102,14 @@
 			};
 
 			//adds a call the each of the PLOTS to the queue
-			this.populate = function() {	
+			this.populate = function() {
 				for (i in PLOTS) {
 					//NOTE: we don't need to wait for input when plotting,
 					//      but we do after clearing the plot
 
 					//add a plot to the queue...
 					EVENT_QUEUE.addEvent(new Event(PLOTS[i], true));
-					
+
 					//...and a call to clear it
 					EVENT_QUEUE.addEvent(new Event(clearVis, false));
 				}
@@ -119,7 +119,7 @@
 		/***************
 		*  FUNCTIONS  *
 		***************/
-		
+
 		// generates a random int between min and max
 		function randGen(min, max)
 		{
@@ -148,7 +148,7 @@
 		plotRandTable = function() {
 			//original
 			//let valueArray = matrixGen(COLS, ROWS, MIN, MAX);
-		
+
 			console.log("ploting table");
 
 			//avoiding empty header
@@ -288,7 +288,7 @@
 		restartGame = function() {
 				//clear out the screen
 				document.getElementById('score').innerHTML = "";
-				
+
 				//clear out the response lists
 				RESPONSES.length = 0;
 				CORRECT_RESPONSES.length = 0;
@@ -300,14 +300,14 @@
 				main();
 		}
 
-		
+
 		/***************
 		*  MAIN BODY  *
 		***************/
-	
-		//NOTE: PLOTS has to be defined after the definition of all 
+
+		//NOTE: PLOTS has to be defined after the definition of all
 		//      the plotting functions in order to avoid errors
-	
+
 		//list of ploting functions
 		const PLOTS = [
 			plotRandTable
@@ -321,7 +321,7 @@
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
 
 			//start running events from the queue
-			EVENT_QUEUE.readyNext();			
+			EVENT_QUEUE.readyNext();
 
 			//start first round after WAIT_MILLIS
 			//setTimeout(plotRandTable, WAIT_MILLIS);
