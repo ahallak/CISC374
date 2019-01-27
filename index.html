@@ -6,7 +6,7 @@
 <!--<div id="tester" style="width:600px;height:250px;"></div>-->
 
 <body>
-	<p class="dotted" id="maintitle">Data Visualization</p>
+	<div id="maintitle">Recharted</div>
 	<div class="section">
 		<p id="directions"></p>
 	</div>
@@ -28,7 +28,7 @@
 
 		//sets the [default] range of values for random number generation
 		const MIN = 0;
-		const MAX = 1;
+		const MAX = 49;
 
 		//sets the [default] size of our matrix of data
 		const ROWS = 10;
@@ -83,7 +83,7 @@
 
 				if (currentEvent != null) {
 					//run the current event
-					currentEvent.run();
+					currentEvent.run(ROWS, COLS);
 
 					if (currentEvent.shouldReadyNext) {
 						self.readyNext();
@@ -144,32 +144,49 @@
 			return matrix;
 		}
 
+		findFrequencies = function(valueArray) {
+			//count the occurences of each value
+			let freqs = {};
+			let values = [];
+			valueArray.forEach(function(subarr) {
+				subarr.forEach(function(el) {
+					if (el in freqs) {
+						freqs[el]++;
+					} else {
+						freqs[el] = 1;
+						values.push(el);
+					}
+				});
+			});
+
+			//sort the values in decending order of frequency
+			values.sort((v0, v1) => freqs[v1] - freqs[v0]);
+			//console.log(values);
+			//console.log(freqs);
+
+			if (freqs[values[0]] != freqs[values[1]]) {
+				CORRECT_RESPONSES.push(values[0]);
+			} else {
+				CORRECT_RESPONSES.push("="); //TODO figure out a better system for ties
+			}
+			return freqs;
+		}
+
 		//plots a table of default size in the default range
-		plotRandTable = function() {
-			//original
-			//let valueArray = matrixGen(COLS, ROWS, MIN, MAX);
+		plotRandTable = function(rows, cols) {
+
+			// TODO: Values in header are not counted in findFrequencies
+			let valueHeader = [];
+			for (j = 0; j < cols; j++) {
+				valueHeader.push([randGen(0,1)]);
+			}
 
 			console.log("ploting table");
 
 			//avoiding empty header
-			let valueArray = matrixGen(COLS, ROWS-1, MIN, MAX);
-			let valueHeader = [];
-			for (j = 0; j < 10; j++) {
-				valueHeader.push([randGen(0,1)]);
-			}
-			let freqs = [0,0];
-			valueArray.forEach(function(subarr) {
-				subarr.forEach(function(el) {
-					freqs[el]++;
-				});
-			});
-			if (freqs[0] < freqs[1]) {
-				CORRECT_RESPONSES.push("1");
-			} else if (freqs[0] > freqs[1]) {
-				CORRECT_RESPONSES.push("0");
-			} else {
-				CORRECT_RESPONSES.push("="); //TODO figure out a better system for ties
-			}
+			let valueArray = matrixGen(cols, rows-1, MIN, MAX);
+
+			findFrequencies(valueArray);
 
 			let tableParams = [{
 				type: 'table',
@@ -192,6 +209,45 @@
 			}];
 
 			Plotly.plot(NAME, tableParams);
+		}
+
+		plotHeatMap = function(rows, cols) {
+			let valueArray = matrixGen(cols, rows-1, MIN, MAX);
+
+			findFrequencies(valueArray);
+
+			var data = [
+			{
+				z: valueArray,
+				type: 'heatmap'
+			}
+			];
+
+			Plotly.newPlot(NAME, data);
+		}
+
+		plotBarGraph = function(rows, cols) {
+			let valueArray = matrixGen(cols, rows-1, MIN, MAX);
+
+			let freqs = findFrequencies(valueArray);
+
+			let x = [];
+			let y = [];
+
+			for (key in freqs){
+				x.push(key);
+				y.push(freqs[key]);
+			}
+
+			var data = [
+			{
+				x: x,
+				y: y,
+				type: 'bar'
+			}
+			];
+
+			Plotly.newPlot(NAME, data);
 		}
 
 		//clears visuals and adds the option to give user input
@@ -310,7 +366,9 @@
 
 		//list of ploting functions
 		const PLOTS = [
-			plotRandTable
+			plotRandTable,
+			plotHeatMap,
+			plotBarGraph
 		];
 		var EVENT_QUEUE = new EventQueue();
 
