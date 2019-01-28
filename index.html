@@ -1,5 +1,5 @@
 <head>
-	 <link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
 	<script src="plotly-latest.min.js"></script>
 </head>
 
@@ -22,13 +22,13 @@
 	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
 	//as a note, setTimeout does NOT stop the code below it from running.
 	window.onload = function() {
-	 /***************
+		/***************
 		*  CONSTANTS  *
 		***************/
 
 		//sets the [default] range of values for random number generation
 		const MIN = 0;
-		const MAX = 49;
+		const MAX = 9;
 
 		//sets the [default] size of our matrix of data
 		const ROWS = 10;
@@ -46,18 +46,18 @@
 		const RESPONSES = [];
 		const CORRECT_RESPONSES = [];
 
-	 /***************
+		/***************
 		*   CLASSES   *
 		***************/
 
 		//encapsilates information about an event to place in the queue
 		function Event(run, shouldReadyNext) {
-				//0 argument function to be run by EVENT_QUEUE
-				this.run = run;
+			//0 argument function to be run by EVENT_QUEUE
+			this.run = run;
 
-				//boolean indicating whether or not to ready the function after
-				//this in EVENT_QUEUE to be run
-				this.shouldReadyNext = shouldReadyNext;
+			//boolean indicating whether or not to ready the function after
+			//this in EVENT_QUEUE to be run
+			this.shouldReadyNext = shouldReadyNext;
 		}
 
 		//used to invoke asynchronus events in the proper order
@@ -131,10 +131,10 @@
 		{
 			var matrix = [];
 
-			for (i = 0; i < co; i++)
+			for (i = 0; i < ro; i++)
 			{
 				temp = [];
-				for (j = 0; j < ro; j++)
+				for (j = 0; j < co; j++)
 				{
 					temp.push(randGen(min,max));
 				}
@@ -175,18 +175,20 @@
 		//plots a table of default size in the default range
 		plotRandTable = function(rows, cols) {
 
-			// TODO: Values in header are not counted in findFrequencies
-			let valueHeader = [];
-			for (j = 0; j < cols; j++) {
-				valueHeader.push([randGen(0,1)]);
-			}
-
-			console.log("ploting table");
+			console.log("plotting table");
 
 			//avoiding empty header
-			let valueArray = matrixGen(cols, rows-1, MIN, MAX);
+			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			findFrequencies(valueArray);
+
+			let valueHeader = [];
+			valueArray.forEach(function(subarr) {
+				valueHeader.push(subarr.pop());
+			});
+
+			console.log("header" + valueHeader);
+			console.log("array" + valueArray);
 
 			let tableParams = [{
 				type: 'table',
@@ -212,22 +214,35 @@
 		}
 
 		plotHeatMap = function(rows, cols) {
-			let valueArray = matrixGen(cols, rows-1, MIN, MAX);
+			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			findFrequencies(valueArray);
 
 			var data = [
 			{
 				z: valueArray,
-				type: 'heatmap'
+				type: 'heatmap',
+
 			}
 			];
+			var axisTemplate = {
+				//range: [MIN, MAX],
+				//autorange: false,
+				showgrid: false,
+				zeroline: false,
+				showticklabels: false,
+				ticks: ''
+			}
+			var layout = {
+				xaxis: axisTemplate,
+				yaxis: axisTemplate
+			};
 
-			Plotly.newPlot(NAME, data);
+			Plotly.newPlot(NAME, data, layout);
 		}
 
 		plotBarGraph = function(rows, cols) {
-			let valueArray = matrixGen(cols, rows-1, MIN, MAX);
+			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			let freqs = findFrequencies(valueArray);
 
@@ -260,16 +275,11 @@
 		//when the user submits a guess, this function is called.
 		offerInput = function() {
 			let inputobj = document.getElementById('usertext').value;
-			//TODO some sort of input sanitization???
 			if (inputobj.length > 2) {
 				alert("Enter a realistic guess.");
 			} else {
 				RESPONSES.push(inputobj);
-				//repeat it all
-				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-				//setTimeout('plotRandTable();', WAIT_MILLIS);
-				//setTimeout('clearVis();', WAIT_MILLIS*2);
-
+				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 				EVENT_QUEUE.readyNext();
 			}
 		}
@@ -277,83 +287,78 @@
 		//shows the player a comparision between their responses
 		//and the correct ones
 		displayResponses = function() {
-				var inputobj = document.getElementById('usertext').value;
-				if (inputobj.length > 2) {
-						alert("Enter a realistic guess.");
-				}	else {
-						//some sort of input cleansing???
-						RESPONSES.push(inputobj);
+			var inputobj = document.getElementById('usertext').value;
+			if (inputobj.length > 2) {
+				alert("Enter a realistic guess.");
+			}	else {
+				RESPONSES.push(inputobj);
+				document.getElementById('displayResponses').innerHTML = "";
+				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button><button onclick='endGame()'>End game</button>";
 
-						//alert(inputobj);
-						document.getElementById('displayResponses').innerHTML = "";
-						document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button><button onclick='endGame()'>End game</button>";
+				var resultTableParams = [{
+					type: 'table',
+					header: {
+						values: [["Correct responses"], ["Your responses"]],
+						align: "center",
+						line: {width: 1, color: 'black'},
+						fill: {color: "gray"},
+						font: {family: "Arial", size: 12, color: "white"},
+						height: 28
+					},
+					cells: {
+						values: [CORRECT_RESPONSES,RESPONSES],
+						align: "center",
+						line: {color: "black", width: 1},
+						font: {family: "Arial", size: 11, color: ["black"]},
+						height: 20
+					}
+				}];
 
-						var resultTableParams = [{
-								type: 'table',
-								header: {
-										values: [["Correct responses"], ["Your responses"]],
-										align: "center",
-										line: {width: 1, color: 'black'},
-										fill: {color: "gray"},
-										font: {family: "Arial", size: 12, color: "white"},
-										height: 28
-								},
-								cells: {
-										values: [CORRECT_RESPONSES,RESPONSES],
-										align: "center",
-										line: {color: "black", width: 1},
-										font: {family: "Arial", size: 11, color: ["black"]},
-										height: 20
-								}
-						}];
-
-						Plotly.plot(RESULT_NAME, resultTableParams);
-				}
+				Plotly.plot(RESULT_NAME, resultTableParams);
+			}
 		}
 
 		//when the user resumes the game, this function is called.
 		resumeGame = function() {
-				Plotly.purge(RESULT_NAME);
-				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
-				//setTimeout(plotRandTable, WAIT_MILLIS);
-				//setTimeout(clearVis, WAIT_MILLIS*2);
+			Plotly.purge(RESULT_NAME);
+			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 
-				EVENT_QUEUE.readyNext();
+			EVENT_QUEUE.readyNext();
 		}
 
 		//when the user ends the game, this function is called.
 		endGame = function() {
-				document.getElementById('directions').innerHTML = "";
-				Plotly.purge(RESULT_NAME);
+			document.getElementById('directions').innerHTML = "";
+			Plotly.purge(RESULT_NAME);
 
-				//let their score be their success rate, for now
-				let score = 0;
-				for (i in RESPONSES) {
-						if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
-								score++;
-						}
+			//let their score be their success rate, for now
+			let score = 0;
+			for (i in RESPONSES) {
+				if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
+					score++;
 				}
-				score = 100.0 * score / RESPONSES.length;
+			}
+			score = 100.0 * score / RESPONSES.length;
 
-				document.getElementById('score').innerHTML =
-						"You had an accuracy of " + score + "%.";
-				document.getElementById('directions').innerHTML =
-						"<button onclick='restartGame()'>Restart game</button>";
+			document.getElementById('score').innerHTML =
+			"You had an accuracy of " + score + "%.";
+			document.getElementById('directions').innerHTML =
+			"<button onclick='restartGame()'>Restart game</button>";
 		}
 
 		restartGame = function() {
-				//clear out the screen
-				document.getElementById('score').innerHTML = "";
+			//clear out the screen
+			document.getElementById('score').innerHTML = "";
 
-				//clear out the response lists
-				RESPONSES.length = 0;
-				CORRECT_RESPONSES.length = 0;
+			//clear out the response lists
+			RESPONSES.length = 0;
+			CORRECT_RESPONSES.length = 0;
 
-				//clear out the event queue
-				EVENT_QUEUE.clear();
+			//clear out the event queue
+			EVENT_QUEUE.clear();
 
-				//continue on with the new game
-				main();
+			//continue on with the new game
+			main();
 		}
 
 
@@ -366,9 +371,9 @@
 
 		//list of ploting functions
 		const PLOTS = [
-			plotRandTable,
-			plotHeatMap,
-			plotBarGraph
+		plotHeatMap,
+		plotRandTable,
+		plotBarGraph
 		];
 		var EVENT_QUEUE = new EventQueue();
 
@@ -376,14 +381,10 @@
 			//EVENT_QUEUE.populate();
 
 			//display instructions
-			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Use 1, 0, or =";
+			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 
 			//start running events from the queue
 			EVENT_QUEUE.readyNext();
-
-			//start first round after WAIT_MILLIS
-			//setTimeout(plotRandTable, WAIT_MILLIS);
-			//setTimeout(clearVis, WAIT_MILLIS*2);
 		}
 
 		main();
