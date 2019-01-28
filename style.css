@@ -18,6 +18,8 @@ body {
   font-size: 24px;
   background-color: azure; /*sets your background color - check out some more here http://davidbau.com/colors/ */
   text-align: center;
+  font-family: fantasy;
+
 }
 
 p {
@@ -33,6 +35,7 @@ button {
   margin: .5em;
   display: inline-block;
   font-size: 16px;
+  font-family: fantasy;
   border-radius: .25em;
   text-decoration: none;
 }
