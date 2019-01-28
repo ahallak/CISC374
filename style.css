@@ -36,3 +36,10 @@ button {
   border-radius: .25em;
   text-decoration: none;
 }
+
+input {
+	background-color: azure;
+	border: 1px solid #003C57;
+  height: 24px;
+  font-size: 16px;
+}
