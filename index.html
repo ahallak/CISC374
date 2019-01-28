@@ -46,6 +46,7 @@
 		const GRID_STRING = "Plain Grid";
 		const HEAT_STRING = "Heat Map";
 		const BAR_STRING = "Bar Graph";
+		const PIE_STRING = "Pie Chart";
 
 		//arrays for tracking the responses given
 		const RESPONSES = [];
@@ -274,6 +275,41 @@
 			Plotly.newPlot(NAME, data);
 		}
 
+		plotPieChart = function() {
+			//original
+			//let valueArray = matrixGen(COLS, ROWS, MIN, MAX);
+		
+			//console.log("ploting pie");
+			GRAPH_TYPE.unshift(PIE_STRING);
+
+			let valueArray = []
+			var zeroCount = 0;
+			var oneCount = 0;
+
+			for (i = 0; i < 100; i++) 
+			{
+				let temp = randGen(0,1);
+				if (temp == 0)
+				{
+					zeroCount++;
+				} else {
+					oneCount++;
+				}
+			}
+
+			var data = [{
+  				values: [zeroCount, oneCount],
+  				labels: ['0', '1'],
+  				type: 'pie'
+			}];
+
+			var layout = {
+			  height: 400,
+			  width: 500
+			};
+			Plotly.newPlot(NAME, data, layout);
+		}
+
 		//clears visuals and adds the option to give user input
 		//input may need to be reworked/given more names, etc to put it in a table
 		clearVis = function() {
@@ -390,7 +426,8 @@
 		const PLOTS = {
 			"Plain Grid": plotRandTable,
 			"Heat Map": plotHeatMap,
-			"Bar Graph": plotBarGraph
+			"Bar Graph": plotBarGraph,
+			"Pie Chart": plotPieChart
 		};
 		var EVENT_QUEUE = new EventQueue();
 
