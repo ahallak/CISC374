@@ -272,7 +272,23 @@
 			}
 			];
 
-			Plotly.newPlot(NAME, data);
+			var layout = {
+			images: [
+			    {
+					"source": "pieChart.png",
+					"xref": 'x',
+					"yref": 'paper',
+					"x": 8,
+					"y": 0,
+					"sizex": 1,
+					"sizey": 1,
+					"xanchor": "center",
+					"yanchor": "top"
+				}
+			]
+			}
+
+			Plotly.newPlot(NAME, data, layout);
 		}
 
 		plotPieChart = function() {
@@ -424,10 +440,10 @@
 
 		//list of ploting functions
 		const PLOTS = {
-			"Plain Grid": plotRandTable,
-			"Heat Map": plotHeatMap,
+			//"Plain Grid": plotRandTable,
+			//"Heat Map": plotHeatMap,
 			"Bar Graph": plotBarGraph,
-			"Pie Chart": plotPieChart
+			//"Pie Chart": plotPieChart
 		};
 		var EVENT_QUEUE = new EventQueue();
 
@@ -438,7 +454,8 @@
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 
 			//start running events from the queue
-			EVENT_QUEUE.readyNext();
+			//EVENT_QUEUE.readyNext();
+			plotBarGraph(ROWS, COLS);
 		}
 
 		main();
