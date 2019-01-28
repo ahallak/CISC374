@@ -9,21 +9,19 @@
 .section {
   background-color: powderblue;
   border: solid 1px black;
-  margin: 2em;
   border-radius: .5em;
 }
 
 body {
   color: #002D40;
   font-size: 24px;
-  background-color: azure; /*sets your background color - check out some more here http://davidbau.com/colors/ */
+  background-color: azure; /* sets your background color - check out some more here http://davidbau.com/colors/ */
   text-align: center;
-  font-family: fantasy;
-
+  font-family: sans-serif;
 }
 
 p {
-  margin: 1em;
+  margin: .5em;
 }
 
 /* styling aided by https://www.w3schools.com/csS/css3_buttons.asp */
@@ -35,7 +33,7 @@ button {
   margin: .5em;
   display: inline-block;
   font-size: 16px;
-  font-family: fantasy;
+  font-family: sans-serif;
   border-radius: .25em;
   text-decoration: none;
 }
