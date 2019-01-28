@@ -358,6 +358,8 @@
 			document.getElementById('directions').innerHTML = "";
 			Plotly.purge(RESULT_NAME);
 
+			//GRAPH_TYPE.unshift(BAR_STRING);
+
 			//let their score be their success rate, for now
 			score = {};
 			num = {};
@@ -371,9 +373,16 @@
 				let key = GRAPH_TYPE[i];
 				if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
 					score[key]++;
+					console.log('recorded correct response for ' + key);
+				} else {
+					console.log('recorded incorrect response for ' + key);
 				}
 				num[key]++;
 			}
+			console.log(RESPONSES)
+
+			console.log(score);
+			console.log(num);
 
 			for (key in PLOTS) {
 				if (num[key] != 0) {
@@ -382,9 +391,27 @@
 			}
 
 			let scorestring = "";
+			let x = [];
+			let y = [];
 			for (key in PLOTS) {
 				scorestring += "For " + key + ", you had an accuracy of " + score[key] + "%. ";
+				x.push(key);
+				y.push(score[key]);
 			}
+
+			let data = [
+			{
+				x: x,
+				y: y,
+				type: 'bar'
+			}
+			];
+
+			let layout = {
+				yaxis: {range: [0, 100]}
+			};
+
+			Plotly.newPlot(NAME, data, layout);
 
 			document.getElementById('score').innerHTML = scorestring;
 			document.getElementById('directions').innerHTML =
@@ -392,6 +419,7 @@
 		}
 
 		restartGame = function() {
+			Plotly.purge(NAME);
 			//clear out the screen
 			document.getElementById('score').innerHTML = "";
 
