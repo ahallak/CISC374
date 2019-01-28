@@ -42,9 +42,15 @@
 		const NAME = 'table';
 		const RESULT_NAME = 'results';
 
+		const GRID_STRING = "Plain Grid";
+		const HEAT_STRING = "Heat Map";
+		const BAR_STRING = "Bar Graph";
+		const GRAPH_STRINGS = [GRID_STRING, HEAT_STRING, BAR_STRING];
+
 		//arrays for tracking the responses given
 		const RESPONSES = [];
 		const CORRECT_RESPONSES = [];
+		const GRAPH_TYPE = [];
 
 		/***************
 		*   CLASSES   *
@@ -181,6 +187,7 @@
 			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			findFrequencies(valueArray);
+			GRAPH_TYPE.push(GRID_STRING);
 
 			let valueHeader = [];
 			valueArray.forEach(function(subarr) {
@@ -217,6 +224,7 @@
 			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			findFrequencies(valueArray);
+			GRAPH_TYPE.push(HEAT_STRING);
 
 			var data = [
 			{
@@ -245,6 +253,7 @@
 			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			let freqs = findFrequencies(valueArray);
+			GRAPH_TYPE.push(BAR_STRING);
 
 			let x = [];
 			let y = [];
@@ -269,21 +278,10 @@
 		//input may need to be reworked/given more names, etc to put it in a table
 		clearVis = function() {
 			Plotly.purge(NAME);
-			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button id=\"userclick\" onclick = \"offerInput();\">Submit</button><button onclick=\"displayResponses();\">Submit and show responses</button>";
+			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponses();\">Submit</button>";
 		}
 
 		//when the user submits a guess, this function is called.
-		offerInput = function() {
-			let inputobj = document.getElementById('usertext').value;
-			if (inputobj.length > 2) {
-				alert("Enter a realistic guess.");
-			} else {
-				RESPONSES.push(inputobj);
-				document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
-				EVENT_QUEUE.readyNext();
-			}
-		}
-
 		//shows the player a comparision between their responses
 		//and the correct ones
 		displayResponses = function() {
@@ -293,12 +291,12 @@
 			}	else {
 				RESPONSES.push(inputobj);
 				document.getElementById('displayResponses').innerHTML = "";
-				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Resume game</button><button onclick='endGame()'>End game</button>";
+				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Continue</button><button onclick='endGame()'>End game</button>";
 
 				var resultTableParams = [{
 					type: 'table',
 					header: {
-						values: [["Correct responses"], ["Your responses"]],
+						values: [["Correct responses"], ["Your responses"], ["Type of Graph"]],
 						align: "center",
 						line: {width: 1, color: 'black'},
 						fill: {color: "gray"},
@@ -306,7 +304,7 @@
 						height: 28
 					},
 					cells: {
-						values: [CORRECT_RESPONSES,RESPONSES],
+						values: [CORRECT_RESPONSES,RESPONSES,GRAPH_TYPE],
 						align: "center",
 						line: {color: "black", width: 1},
 						font: {family: "Arial", size: 11, color: ["black"]},
@@ -332,16 +330,49 @@
 			Plotly.purge(RESULT_NAME);
 
 			//let their score be their success rate, for now
-			let score = 0;
+			let scoreGrid = 0;
+			let numGrid = 0;
+
+			let scoreHeat = 0;
+			let numHeat = 0;
+
+			let scoreBar = 0;
+			let numBar = 0;
+
 			for (i in RESPONSES) {
-				if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
-					score++;
+				if (GRAPH_TYPE[i] == GRID_STRING) {
+					if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
+						scoreGrid++;
+					}
+					numGrid++;
+				}
+				if (GRAPH_TYPE[i] == HEAT_STRING) {
+					if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
+						scoreHeat++;
+					}
+					numHeat++;
+				}
+				if (GRAPH_TYPE[i] == BAR_STRING) {
+					if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
+						scoreBar++;
+					}
+					numBar++;
 				}
 			}
-			score = 100.0 * score / RESPONSES.length;
+			if (numGrid != 0) {
+				scoreGrid = 100.0 * scoreGrid / numGrid;
+			}
+			if (numHeat != 0) {
+				scoreHeat = 100.0 * scoreHeat / numHeat;
+			}
+			if (numBar != 0) {
+				scoreBar = 100.0 * scoreBar / numBar;
+			}
 
 			document.getElementById('score').innerHTML =
-			"You had an accuracy of " + score + "%.";
+			"For " + GRID_STRING + ", you had an accuracy of " + scoreGrid +
+			"%. \n For " + HEAT_STRING + ", you had an accuracy of " + scoreHeat +
+			"%. \n For " + BAR_STRING + ", you had an accuracy of " + scoreBar + "%.";
 			document.getElementById('directions').innerHTML =
 			"<button onclick='restartGame()'>Restart game</button>";
 		}
@@ -353,6 +384,7 @@
 			//clear out the response lists
 			RESPONSES.length = 0;
 			CORRECT_RESPONSES.length = 0;
+			GRAPH_TYPE.length = 0;
 
 			//clear out the event queue
 			EVENT_QUEUE.clear();
