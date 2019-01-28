@@ -35,8 +35,8 @@
 		const COLS = 10;
 
 		//sets how long the visuals will be displayed
-		const WAIT_MILLIS = 5000;
-		//const WAIT_MILLIS = 3500;
+		//const WAIT_MILLIS = 5000;
+		const WAIT_MILLIS = 3000;
 
 		//name of graph
 		const NAME = 'table';
@@ -168,8 +168,6 @@
 
 			//sort the values in decending order of frequency
 			values.sort((v0, v1) => freqs[v1] - freqs[v0]);
-			//console.log(values);
-			//console.log(freqs);
 
 			if (freqs[values[0]] != freqs[values[1]]) {
 				CORRECT_RESPONSES.unshift(values[0]);
@@ -275,31 +273,24 @@
 			Plotly.newPlot(NAME, data);
 		}
 
-		plotPieChart = function() {
-			//original
-			//let valueArray = matrixGen(COLS, ROWS, MIN, MAX);
-		
-			//console.log("ploting pie");
+		plotPieChart = function(rows, cols) {
+
+			let valueArray = matrixGen(cols, rows, MIN, MAX);
+
+			let freqs = findFrequencies(valueArray);
 			GRAPH_TYPE.unshift(PIE_STRING);
 
-			let valueArray = []
-			var zeroCount = 0;
-			var oneCount = 0;
+			let x = [];
+			let y = [];
 
-			for (i = 0; i < 100; i++) 
-			{
-				let temp = randGen(0,1);
-				if (temp == 0)
-				{
-					zeroCount++;
-				} else {
-					oneCount++;
-				}
+			for (key in freqs){
+				x.push(key);
+				y.push(freqs[key]);
 			}
 
 			var data = [{
-  				values: [zeroCount, oneCount],
-  				labels: ['0', '1'],
+  				values: y,
+  				labels: x,
   				type: 'pie'
 			}];
 
@@ -335,16 +326,17 @@
 						values: [["Correct responses"], ["Your responses"], ["Type of Graph"]],
 						align: "center",
 						line: {width: 1, color: 'black'},
-						fill: {color: "gray"},
-						font: {family: "Arial", size: 12, color: "white"},
-						height: 28
+						fill: {color: "powderblue"},
+						font: {family: "Arial", size: 16, color: "black"},
+						height: 32
 					},
 					cells: {
 						values: [CORRECT_RESPONSES,RESPONSES,GRAPH_TYPE],
 						align: "center",
 						line: {color: "black", width: 1},
-						font: {family: "Arial", size: 11, color: ["black"]},
-						height: 20
+						fill: {color: "azure"},
+						font: {family: "Arial", size: 14, color: ["black"]},
+						height: 24
 					}
 				}];
 
@@ -426,8 +418,8 @@
 		const PLOTS = {
 			"Plain Grid": plotRandTable,
 			"Heat Map": plotHeatMap,
-			"Bar Graph": plotBarGraph,
-			"Pie Chart": plotPieChart
+			"Pie Chart": plotPieChart,
+			"Bar Graph": plotBarGraph
 		};
 		var EVENT_QUEUE = new EventQueue();
 
