@@ -42,10 +42,10 @@
 		const NAME = 'table';
 		const RESULT_NAME = 'results';
 
+		//constants of the name of strings
 		const GRID_STRING = "Plain Grid";
 		const HEAT_STRING = "Heat Map";
 		const BAR_STRING = "Bar Graph";
-		const GRAPH_STRINGS = [GRID_STRING, HEAT_STRING, BAR_STRING];
 
 		//arrays for tracking the responses given
 		const RESPONSES = [];
@@ -171,9 +171,9 @@
 			//console.log(freqs);
 
 			if (freqs[values[0]] != freqs[values[1]]) {
-				CORRECT_RESPONSES.push(values[0]);
+				CORRECT_RESPONSES.unshift(values[0]);
 			} else {
-				CORRECT_RESPONSES.push("="); //TODO figure out a better system for ties
+				CORRECT_RESPONSES.unshift("="); //TODO figure out a better system for ties
 			}
 			return freqs;
 		}
@@ -187,7 +187,7 @@
 			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			findFrequencies(valueArray);
-			GRAPH_TYPE.push(GRID_STRING);
+			GRAPH_TYPE.unshift(GRID_STRING);
 
 			let valueHeader = [];
 			valueArray.forEach(function(subarr) {
@@ -224,7 +224,7 @@
 			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			findFrequencies(valueArray);
-			GRAPH_TYPE.push(HEAT_STRING);
+			GRAPH_TYPE.unshift(HEAT_STRING);
 
 			var data = [
 			{
@@ -253,7 +253,7 @@
 			let valueArray = matrixGen(cols, rows, MIN, MAX);
 
 			let freqs = findFrequencies(valueArray);
-			GRAPH_TYPE.push(BAR_STRING);
+			GRAPH_TYPE.unshift(BAR_STRING);
 
 			let x = [];
 			let y = [];
@@ -289,7 +289,7 @@
 			if (inputobj.length > 2) {
 				alert("Enter a realistic guess.");
 			}	else {
-				RESPONSES.push(inputobj);
+				RESPONSES.unshift(inputobj);
 				document.getElementById('displayResponses').innerHTML = "";
 				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Continue</button><button onclick='endGame()'>End game</button>";
 
@@ -330,49 +330,34 @@
 			Plotly.purge(RESULT_NAME);
 
 			//let their score be their success rate, for now
-			let scoreGrid = 0;
-			let numGrid = 0;
+			score = {};
+			num = {};
 
-			let scoreHeat = 0;
-			let numHeat = 0;
-
-			let scoreBar = 0;
-			let numBar = 0;
+			for (key in PLOTS) {
+				score[key] = 0;
+				num[key] = 0;
+			}
 
 			for (i in RESPONSES) {
-				if (GRAPH_TYPE[i] == GRID_STRING) {
-					if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
-						scoreGrid++;
-					}
-					numGrid++;
+				let key = GRAPH_TYPE[i];
+				if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
+					score[key]++;
 				}
-				if (GRAPH_TYPE[i] == HEAT_STRING) {
-					if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
-						scoreHeat++;
-					}
-					numHeat++;
-				}
-				if (GRAPH_TYPE[i] == BAR_STRING) {
-					if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
-						scoreBar++;
-					}
-					numBar++;
-				}
-			}
-			if (numGrid != 0) {
-				scoreGrid = 100.0 * scoreGrid / numGrid;
-			}
-			if (numHeat != 0) {
-				scoreHeat = 100.0 * scoreHeat / numHeat;
-			}
-			if (numBar != 0) {
-				scoreBar = 100.0 * scoreBar / numBar;
+				num[key]++;
 			}
 
-			document.getElementById('score').innerHTML =
-			"For " + GRID_STRING + ", you had an accuracy of " + scoreGrid +
-			"%. \n For " + HEAT_STRING + ", you had an accuracy of " + scoreHeat +
-			"%. \n For " + BAR_STRING + ", you had an accuracy of " + scoreBar + "%.";
+			for (key in PLOTS) {
+				if (num[key] != 0) {
+					score[key] = 100.0 * score[key] / num[key];
+				}
+			}
+
+			let scorestring = "";
+			for (key in PLOTS) {
+				scorestring += "For " + key + ", you had an accuracy of " + score[key] + "%.";
+			}
+
+			document.getElementById('score').innerHTML = scorestring;
 			document.getElementById('directions').innerHTML =
 			"<button onclick='restartGame()'>Restart game</button>";
 		}
@@ -402,11 +387,11 @@
 		//      the plotting functions in order to avoid errors
 
 		//list of ploting functions
-		const PLOTS = [
-		plotRandTable,
-		plotHeatMap,
-		plotBarGraph
-		];
+		const PLOTS = {
+			"Plain Grid": plotRandTable,
+			"Heat Map": plotHeatMap,
+			"Bar Graph": plotBarGraph
+		};
 		var EVENT_QUEUE = new EventQueue();
 
 		function main() {
