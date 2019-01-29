@@ -36,7 +36,7 @@
 
 		//sets how long the visuals will be displayed
 		//const WAIT_MILLIS = 5000;
-		const WAIT_MILLIS = 3000;
+		const WAIT_MILLIS = 30;
 
 		//name of graph
 		const NAME = 'table';
@@ -136,16 +136,127 @@
 		// Generates a rows by cols matrix of ints between min and max
 		function matrixGen(co, ro, min, max)
 		{
-			var matrix = [];
-
-			for (i = 0; i < ro; i++)
+			breakLoop = false;
+			
+			while(!breakLoop)
 			{
-				temp = [];
-				for (j = 0; j < co; j++)
+				var matrix = [];
+
+				for (i = 0; i < ro; i++)
 				{
-					temp.push(randGen(min,max));
+					temp = [];
+					for (j = 0; j < co; j++)
+					{
+						temp.push(randGen(min,max));
+					}
+					matrix.push(temp);
+				}	
+
+				allValues = []
+
+				for (i = 0; i < matrix.length; i++)
+				{
+					for (j = 0; j < matrix[i].length; j++)
+					{
+						allValues.push(matrix[i][j]);
+					}
 				}
-				matrix.push(temp);
+
+				zeroCount = oneCount = twoCount = threeCount = fourCount = 0;
+				fiveCount = sixCount = sevenCount = eightCount = nineCount = 0;
+				allValues = allValues.sort()
+				
+				//console.log(allValues)
+
+				for (i = 0; i < allValues.length; i++)
+				{
+					switch(allValues[i])
+					{
+						case 0:
+							zeroCount++;
+							break;
+						case 1:
+							oneCount++;
+							break;
+						case 2:
+							twoCount++;
+							break;
+						case 3:
+							threeCount++;
+							break;
+						case 4:
+							fourCount++;
+							break;
+						case 5:
+							fiveCount++;
+							break;
+						case 6:
+							sixCount++;
+							break;
+						case 7:
+							sevenCount++;
+							break;
+						case 8:
+							eightCount++;
+							break;
+						case 9:
+							nineCount++;
+							break;
+					}
+				}
+				console.log('---')
+				totalsArray = [zeroCount, oneCount, twoCount, threeCount, fourCount, fiveCount, sixCount, sevenCount, eightCount, nineCount];
+				
+				maxFreq = Math.max(zeroCount, oneCount, twoCount, threeCount, fourCount, fiveCount, sixCount, sevenCount, eightCount, nineCount)
+				console.log(maxFreq);
+				occurrences = 0;
+
+				if (maxFreq == zeroCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == oneCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == twoCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == threeCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == fourCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == fiveCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == sixCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == sevenCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == eightCount)
+				{
+					occurrences++;
+				}
+				if (maxFreq == nineCount)
+				{
+					occurrences++;
+				}
+				if (occurrences < 2)
+				{
+					breakLoop = true
+				}
+				//console.log(zeroCount, oneCount, twoCount, threeCount, fourCount);
+				//console.log(fiveCount, sixCount, sevenCount, eightCount, nineCount);
 			}
 
 			return matrix;
