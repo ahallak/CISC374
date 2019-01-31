@@ -613,7 +613,58 @@
 			];
 
 			let layout = {
-				yaxis: {range: [0, 100]}
+				yaxis: {range: [0, 100]},
+				
+				images: [
+					{
+					x: 0,
+					y: -0.05,
+					sizex: 0.2,
+					sizey: 0.2,
+					source: "https://raw.githubusercontent.com/ahallak/CISC374/master/tableIcon.png",
+					xanchor: "center",
+					xref: "x",
+					yanchor: "top",
+					yref: "paper"
+					},
+					
+					{
+					x: 1,
+					y: -0.05,
+					sizex: 0.2,
+					sizey: 0.2,
+					source: "https://raw.githubusercontent.com/ahallak/CISC374/master/heatmapIcon.png",
+					xanchor: "center",
+					xref: "x",
+					yanchor: "top",
+					yref: "paper"
+					},
+					
+					{
+					x: 2,
+					y: -0.05,
+					sizex: 0.2,
+					sizey: 0.2,
+					source: "https://raw.githubusercontent.com/ahallak/CISC374/master/pieChartIcon.png",
+					xanchor: "center",
+					xref: "x",
+					yanchor: "top",
+					yref: "paper"
+					},
+					
+					{
+					x: 3,
+					y: -0.05,
+					sizex: 0.2,
+					sizey: 0.2,
+					source: "https://raw.githubusercontent.com/ahallak/CISC374/master/barGraphIcon.png",
+					xanchor: "center",
+					xref: "x",
+					yanchor: "top",
+					yref: "paper"
+					},
+				],
+				
 			};
 
 			Plotly.newPlot(NAME, data, layout);
