@@ -9,6 +9,7 @@
 	<p id="maintitle">Data Visualization</p>
 	<div class="section">
 		<p id="directions"></p>
+		<p id="controlFlowButtons"></p>
 	</div>
 	<div id="table"></div>
 	<div id="displayResponses"></div>
@@ -161,7 +162,7 @@
 			while(!breakLoop)
 			{
 
-				console.log(cols, rows);
+				//console.log(cols, rows);
 				var matrix = [];
 
 				for (i = 0; i < rows; i++)
@@ -320,7 +321,7 @@
 		//plots a table of default size in the default range
 		plotRandTable = function(rows, cols) {
 
-			console.log("plotting " + rows + " by " + cols + " table");
+			//console.log("plotting " + rows + " by " + cols + " table");
 
 			//avoiding empty header
 			let valueArray = matrixGen(rows, cols, MIN, MAX);
@@ -446,14 +447,16 @@
 		//input may need to be reworked/given more names, etc to put it in a table
 		clearVis = function() {
 			Plotly.purge(NAME);
-			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponses();\">Submit</button>";
+			document.getElementById('directions').innerHTML = "";
+			document.getElementById('controlFlowButtons').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponses();\">Submit</button>";
 		}
 
 		//clears visuals and adds the option to give user input
 		//before heatmap
 		clearVisHM = function() {
 			Plotly.purge(NAME);
-			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponsesHM();\">Submit</button>";
+			document.getElementById('directions').innerHTML = "";
+			document.getElementById('controlFlowButtons').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponsesHM();\">Submit</button>";
 		}
 
 		//when the user submits a guess, this function is called.
@@ -466,7 +469,8 @@
 			}	else {
 				RESPONSES.unshift(inputobj);
 				document.getElementById('displayResponses').innerHTML = "";
-				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGame();\">Continue</button><button onclick='endGame()'>End game</button>";
+			document.getElementById('directions').innerHTML = "";
+				document.getElementById('controlFlowButtons').innerHTML = "<button onclick=\"resumeGame();\">Continue</button><button onclick='endGame()'>End game</button>";
 
 				var resultTableParams = [{
 					type: 'table',
@@ -503,7 +507,8 @@
 			}	else {
 				RESPONSES.unshift(inputobj);
 				document.getElementById('displayResponses').innerHTML = "";
-				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGameHM();\">Continue</button><button onclick='endGame()'>End game</button>";
+				document.getElementById('directions').innerHTML = "";
+				document.getElementById('controlFlowButtons').innerHTML = "<button onclick=\"resumeGameHM();\">Continue</button><button onclick='endGame()'>End game</button>";
 
 				var resultTableParams = [{
 					type: 'table',
@@ -532,6 +537,7 @@
 		//when the user resumes the game, this function is called.
 		resumeGame = function() {
 			Plotly.purge(RESULT_NAME);
+			document.getElementById('controlFlowButtons').innerHTML = "";
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 
 			EVENT_QUEUE.readyNext();
@@ -541,6 +547,7 @@
 		//before heatmap
 		resumeGameHM = function() {
 			Plotly.purge(RESULT_NAME);
+			document.getElementById('controlFlowButtons').innerHTML = "";
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\. Here's the legend for the heatmap:";
 			document.getElementById('directions').innerHTML += "<br/><img src = \"legendZerotoNine.png\" alt = \"Legend for Heatmap.\" />";
 			EVENT_QUEUE.readyNext();
@@ -607,7 +614,8 @@
 			Plotly.newPlot(NAME, data, layout);
 
 			document.getElementById('score').innerHTML = scorestring;
-			document.getElementById('directions').innerHTML =
+			document.getElementById('directions').innerHTML = "";
+			document.getElementById('controlFlowButtons').innerHTML =
 			"<button onclick='restartGame()'>Restart game</button>";
 		}
 
@@ -615,6 +623,7 @@
 			Plotly.purge(NAME);
 			//clear out the screen
 			document.getElementById('score').innerHTML = "";
+			document.getElementById('controlFlowButtons').innerHTML = "";
 
 			//clear out the response lists
 			RESPONSES.length = 0;
@@ -653,6 +662,7 @@
 		function main() {
 			//display instructions
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
+			
 
 			//start running events from the queue
 			EVENT_QUEUE.readyNext();
