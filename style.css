@@ -1,6 +1,7 @@
 #maintitle {
   /*font-size: 72px;*/
-  font-size: 4vw;
+  /*font-size: 4vw;*/
+  font-size: 6vh;
   text-decoration: underline;
   text-align: center;
   color: #003C57;
@@ -15,7 +16,8 @@
 
 body {
   /*font-size: 24px;*/
-  font-size: 1.5vw;
+  /*font-size: 1.5vw;*/
+  font-size: 2.3vh;
   color: #002D40;
   background-color: azure; /* sets your background color - check out some more here http://davidbau.com/colors/ */
   text-align: center;
@@ -24,7 +26,8 @@ body {
 
 p {
   /*margin: .5em;*/
-  margin: 1.5vw;
+  /*margin: 1.2vw;*/
+  margin: 1.5vh;
 }
 
 /* styling aided by https://www.w3schools.com/csS/css3_buttons.asp */
@@ -42,10 +45,16 @@ button {
   font-size: 16px;
   border-radius: .25em;
   */
-  padding: 1.2vw 1.5vw;
-  margin: .8vw;
+  /*
+  padding: .8vw 1vw;
+  margin: .7vw;
   font-size: 1.2vw;
   border-radius: .3vw;
+  */
+  padding: 1vh 1.2vh;
+  margin: .9vh;
+  font-size: 2vh;
+  border-radius: .6vh;
 }
 
 input {
@@ -55,6 +64,12 @@ input {
   height: 24px;
   font-size: 16px;
   */
-  height: 1.7vw;
-  font-size: 1.3vw;
+
+  height: 2.5vh;
+  font-size: 2vh;
+}
+
+img {
+  width:5vh;
+  height:auto;
 }
