@@ -133,13 +133,13 @@
 						EVENT_QUEUE.addEvent(new Event(clearVisHM, false));
 					} else {
 						EVENT_QUEUE.addEvent(new Event(clearVis, false));
-					}
-					
-					//finally, increase the size of the generated dataset
-					//for next time we populate the queue
-					self.rows += self.sizeDelta;
-					self.cols += self.sizeDelta;
+					}	
 				}
+
+				//finally, increase the size of the generated dataset
+				//for next time we populate the queue
+				self.rows += self.sizeDelta;
+				self.cols += self.sizeDelta;
 			}
 		}
 
@@ -320,7 +320,7 @@
 		//plots a table of default size in the default range
 		plotRandTable = function(rows, cols) {
 
-			//console.log("plotting table");
+			console.log("plotting " + rows + " by " + cols + " table");
 
 			//avoiding empty header
 			let valueArray = matrixGen(rows, cols, MIN, MAX);
