@@ -85,26 +85,24 @@
 
 			//sets the next event in the queue to run after WAIT_MILLIS
 			this.readyNext = function() {
-				//fill up the queue if it's empty
-				if (self.events[0] == null) {
-					self.populate();
-				}
-
 				setTimeout(self.runNext, WAIT_MILLIS);
 			};
 
 			//runs the next function, and then readies the one after it,
 			//if indicated
 			this.runNext = function() {
+				//fill up the queue if it's empty
+				if (self.events[0] == null) {
+					self.populate();
+				}
+				
 				let currentEvent = self.events.shift();
+				
+				//run the current event
+				currentEvent.run(self.rows, self.cols);
 
-				if (currentEvent != null) {
-					//run the current event
-					currentEvent.run(self.rows, self.cols);
-
-					if (currentEvent.shouldReadyNext) {
-						self.readyNext();
-					}
+				if (currentEvent.shouldReadyNext) {
+					self.readyNext();
 				}
 			};
 
@@ -539,8 +537,11 @@
 			Plotly.purge(RESULT_NAME);
 			document.getElementById('controlFlowButtons').innerHTML = "";
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
-
-			EVENT_QUEUE.readyNext();
+			document.getElementById('controlFlowButtons').innerHTML = "<button id='continueButton'>Continue</button>";	
+			document.getElementById('continueButton').onclick = function() {
+				document.getElementById('controlFlowButtons').innerHTML = "";
+				EVENT_QUEUE.runNext();
+			};
 		}
 
 		//when the user resumes the game, this function is called.
@@ -550,7 +551,11 @@
 			document.getElementById('controlFlowButtons').innerHTML = "";
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\. Here's the legend for the heatmap:";
 			document.getElementById('directions').innerHTML += "<br/><img src = \"legendZerotoNine.png\" alt = \"Legend for Heatmap.\" />";
-			EVENT_QUEUE.readyNext();
+			document.getElementById('controlFlowButtons').innerHTML = "<button id='continueButton'>Continue</button>";	
+			document.getElementById('continueButton').onclick = function() {
+				document.getElementById('controlFlowButtons').innerHTML = "";
+				EVENT_QUEUE.runNext();
+			};
 		}
 
 		//when the user ends the game, this function is called.
