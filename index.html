@@ -125,7 +125,7 @@
 					//      but we do after clearing the plot
 
 					//add a plot to the queue...
-					EVENT_QUEUE.addEvent(new Event(PLOTS[i], [self.rows, self.cols], true));
+					EVENT_QUEUE.addEvent(new Event(PLOTS[i], true));
 
 					//console.log(i + "eventboi");
 
@@ -654,18 +654,25 @@
 			"Pie Chart": plotPieChart,
 			"Bar Graph": plotBarGraph
 		};
+		
 		var EVENT_QUEUE = new EventQueue(START_ROWS,
 		                                 START_COLS, 
 		                                 START_DELTA);
 
-
 		function main() {
 			//display instructions
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
-			
+			document.getElementById('controlFlowButtons').innerHTML = "<button id='continueButton'>Continue</button>";	
+			document.getElementById('continueButton').onclick = function() {
+				document.getElementById('controlFlowButtons').innerHTML = "";
+				EVENT_QUEUE.runNext();
+			};
+
+			//set up the queue
+			EVENT_QUEUE.populate();
 
 			//start running events from the queue
-			EVENT_QUEUE.readyNext();
+			//EVENT_QUEUE.readyNext();
 		}
 
 		main();
