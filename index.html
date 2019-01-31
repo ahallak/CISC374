@@ -126,7 +126,7 @@
 					//add a plot to the queue...
 					EVENT_QUEUE.addEvent(new Event(PLOTS[i], [self.rows, self.cols], true));
 
-					console.log(i + "eventboi");
+					//console.log(i + "eventboi");
 
 					//...and a call to clear it
 					if (i == GRID_STRING) { //since heatmap is after grid**** hardcoded
@@ -154,18 +154,20 @@
 		}
 
 		// Generates a rows by cols matrix of ints between min and max
-		function matrixGen(co, ro, min, max)
+		function matrixGen(rows, cols, min, max)
 		{
 			breakLoop = false;
 
 			while(!breakLoop)
 			{
+
+				console.log(cols, rows);
 				var matrix = [];
 
-				for (i = 0; i < ro; i++)
+				for (i = 0; i < rows; i++)
 				{
 					temp = [];
-					for (j = 0; j < co; j++)
+					for (j = 0; j < cols; j++)
 					{
 						temp.push(randGen(min,max));
 					}
@@ -226,11 +228,11 @@
 						break;
 					}
 				}
-				console.log('---')
+				//console.log('---')
 				totalsArray = [zeroCount, oneCount, twoCount, threeCount, fourCount, fiveCount, sixCount, sevenCount, eightCount, nineCount];
 
 				maxFreq = Math.max(zeroCount, oneCount, twoCount, threeCount, fourCount, fiveCount, sixCount, sevenCount, eightCount, nineCount)
-				console.log(maxFreq);
+				//console.log(maxFreq);
 				occurrences = 0;
 
 
@@ -318,10 +320,10 @@
 		//plots a table of default size in the default range
 		plotRandTable = function(rows, cols) {
 
-			console.log("plotting table");
+			//console.log("plotting table");
 
 			//avoiding empty header
-			let valueArray = matrixGen(cols, rows, MIN, MAX);
+			let valueArray = matrixGen(rows, cols, MIN, MAX);
 
 			findFrequencies(valueArray);
 			GRAPH_TYPE.unshift(GRID_STRING);
@@ -331,8 +333,8 @@
 				valueHeader.push(subarr.pop());
 			});
 
-			console.log("header" + valueHeader);
-			console.log("array" + valueArray);
+			//console.log("header" + valueHeader);
+			//console.log("array" + valueArray);
 
 			let tableParams = [{
 				type: 'table',
@@ -358,7 +360,7 @@
 		}
 
 		plotHeatMap = function(rows, cols) {
-			let valueArray = matrixGen(cols, rows, MIN, MAX);
+			let valueArray = matrixGen(rows, cols, MIN, MAX);
 
 			findFrequencies(valueArray);
 			GRAPH_TYPE.unshift(HEAT_STRING);
@@ -388,7 +390,7 @@
 		}
 
 		plotBarGraph = function(rows, cols) {
-			let valueArray = matrixGen(cols, rows, MIN, MAX);
+			let valueArray = matrixGen(rows, cols, MIN, MAX);
 
 			let freqs = findFrequencies(valueArray);
 			GRAPH_TYPE.unshift(BAR_STRING);
@@ -414,7 +416,7 @@
 
 		plotPieChart = function(rows, cols) {
 
-			let valueArray = matrixGen(cols, rows, MIN, MAX);
+			let valueArray = matrixGen(rows, cols, MIN, MAX);
 
 			let freqs = findFrequencies(valueArray);
 			GRAPH_TYPE.unshift(PIE_STRING);
@@ -564,16 +566,16 @@
 				let key = GRAPH_TYPE[i];
 				if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
 					score[key]++;
-					console.log('recorded correct response for ' + key);
+					//console.log('recorded correct response for ' + key);
 				} else {
-					console.log('recorded incorrect response for ' + key);
+					//console.log('recorded incorrect response for ' + key);
 				}
 				num[key]++;
 			}
-			console.log(RESPONSES)
+			//console.log(RESPONSES)
 
-			console.log(score);
-			console.log(num);
+			//console.log(score);
+			//console.log(num);
 
 			for (key in PLOTS) {
 				if (num[key] != 0) {
