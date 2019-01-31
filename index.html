@@ -35,8 +35,8 @@
 		const COLS = 10;
 
 		//sets how long the visuals will be displayed
-		const WAIT_MILLIS = 5000;
-		//const WAIT_MILLIS = 1000;
+		//const WAIT_MILLIS = 5000;
+		const WAIT_MILLIS = 1000;
 
 		//name of graph
 		const NAME = 'table';
@@ -117,8 +117,14 @@
 					//add a plot to the queue...
 					EVENT_QUEUE.addEvent(new Event(PLOTS[i], true));
 
+					console.log(i + "eventboi");
+
 					//...and a call to clear it
-					EVENT_QUEUE.addEvent(new Event(clearVis, false));
+					if (i == GRID_STRING) { //since heatmap is after grid**** hardcoded
+						EVENT_QUEUE.addEvent(new Event(clearVisHM, false));
+					} else {
+						EVENT_QUEUE.addEvent(new Event(clearVis, false));
+					}
 				}
 			}
 		}
@@ -173,35 +179,35 @@
 					switch(allValues[i])
 					{
 						case 0:
-							zeroCount++;
-							break;
+						zeroCount++;
+						break;
 						case 1:
-							oneCount++;
-							break;
+						oneCount++;
+						break;
 						case 2:
-							twoCount++;
-							break;
+						twoCount++;
+						break;
 						case 3:
-							threeCount++;
-							break;
+						threeCount++;
+						break;
 						case 4:
-							fourCount++;
-							break;
+						fourCount++;
+						break;
 						case 5:
-							fiveCount++;
-							break;
+						fiveCount++;
+						break;
 						case 6:
-							sixCount++;
-							break;
+						sixCount++;
+						break;
 						case 7:
-							sevenCount++;
-							break;
+						sevenCount++;
+						break;
 						case 8:
-							eightCount++;
-							break;
+						eightCount++;
+						break;
 						case 9:
-							nineCount++;
-							break;
+						nineCount++;
+						break;
 					}
 				}
 				console.log('---')
@@ -402,14 +408,14 @@
 			}
 
 			var data = [{
-  				values: y,
-  				labels: x,
-  				type: 'pie'
+				values: y,
+				labels: x,
+				type: 'pie'
 			}];
 
 			var layout = {
-			  height: 400,
-			  width: 500
+				height: 400,
+				width: 500
 			};
 			Plotly.newPlot(NAME, data, layout);
 		}
@@ -419,6 +425,13 @@
 		clearVis = function() {
 			Plotly.purge(NAME);
 			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponses();\">Submit</button>";
+		}
+
+		//clears visuals and adds the option to give user input
+		//before heatmap
+		clearVisHM = function() {
+			Plotly.purge(NAME);
+			document.getElementById('directions').innerHTML = "<div><label>Your guess here: </label><input type=\"text\" id=\"usertext\"></div><button onclick=\"displayResponsesHM();\">Submit</button>";
 		}
 
 		//when the user submits a guess, this function is called.
@@ -457,11 +470,57 @@
 			}
 		}
 
+		//when the user submits a guess, this function is called.
+		//shows the player a comparision between their responses
+		//and the correct ones
+		//before heatmap
+		displayResponsesHM = function() {
+			var inputobj = document.getElementById('usertext').value;
+			if (inputobj.length > 2) {
+				alert("Enter a realistic guess.");
+			}	else {
+				RESPONSES.unshift(inputobj);
+				document.getElementById('displayResponses').innerHTML = "";
+				document.getElementById('directions').innerHTML = "<button onclick=\"resumeGameHM();\">Continue</button><button onclick='endGame()'>End game</button>";
+
+				var resultTableParams = [{
+					type: 'table',
+					header: {
+						values: [["Correct responses"], ["Your responses"], ["Type of Graph"]],
+						align: "center",
+						line: {width: 1, color: 'black'},
+						fill: {color: "powderblue"},
+						font: {family: "Arial", size: 16, color: "black"},
+						height: 32
+					},
+					cells: {
+						values: [CORRECT_RESPONSES,RESPONSES,GRAPH_TYPE],
+						align: "center",
+						line: {color: "black", width: 1},
+						fill: {color: "azure"},
+						font: {family: "Arial", size: 14, color: ["black"]},
+						height: 24
+					}
+				}];
+
+				Plotly.plot(RESULT_NAME, resultTableParams);
+			}
+		}
+
 		//when the user resumes the game, this function is called.
 		resumeGame = function() {
 			Plotly.purge(RESULT_NAME);
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 
+			EVENT_QUEUE.readyNext();
+		}
+
+		//when the user resumes the game, this function is called.
+		//before heatmap
+		resumeGameHM = function() {
+			Plotly.purge(RESULT_NAME);
+			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\. Here's the legend for the heatmap:";
+			document.getElementById('directions').innerHTML += "<br/><img src = \"legendZerotoNine.png\" alt = \"Legend for Heatmap.\" />";
 			EVENT_QUEUE.readyNext();
 		}
 
