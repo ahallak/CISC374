@@ -30,13 +30,16 @@
 		const MIN = 0;
 		const MAX = 9;
 
-		//sets the [default] size of our matrix of data
-		const ROWS = 10;
-		const COLS = 10;
+		//sets the initial size of our matrix of data
+		const START_ROWS = 2;
+		const START_COLS = START_ROWS;
+
+		//sets the initial rate at which thw size of the dataset changes
+		const START_DELTA = 2;
 
 		//sets how long the visuals will be displayed
-		//const WAIT_MILLIS = 5000;
-		const WAIT_MILLIS = 1000;
+		const WAIT_MILLIS = 5000;
+		//const WAIT_MILLIS = 1000;
 
 		//name of graph
 		const NAME = 'table';
@@ -68,9 +71,15 @@
 		}
 
 		//used to invoke asynchronus events in the proper order
-		function EventQueue() {
+		function EventQueue(rows, cols, sizeDelta) {
 			self = this;
 
+			//sets the size of the generated dataset
+			this.rows = rows;
+			this.cols = cols;
+
+			this.sizeDelta = sizeDelta;
+			
 			this.events = [];
 
 			//sets the next event in the queue to run after WAIT_MILLIS
@@ -90,7 +99,7 @@
 
 				if (currentEvent != null) {
 					//run the current event
-					currentEvent.run(ROWS, COLS);
+					currentEvent.run(self.rows, self.cols);
 
 					if (currentEvent.shouldReadyNext) {
 						self.readyNext();
@@ -115,7 +124,7 @@
 					//      but we do after clearing the plot
 
 					//add a plot to the queue...
-					EVENT_QUEUE.addEvent(new Event(PLOTS[i], true));
+					EVENT_QUEUE.addEvent(new Event(PLOTS[i], [self.rows, self.cols], true));
 
 					console.log(i + "eventboi");
 
@@ -125,6 +134,11 @@
 					} else {
 						EVENT_QUEUE.addEvent(new Event(clearVis, false));
 					}
+					
+					//finally, increase the size of the generated dataset
+					//for next time we populate the queue
+					self.rows += self.sizeDelta;
+					self.cols += self.sizeDelta;
 				}
 			}
 		}
@@ -157,6 +171,8 @@
 					}
 					matrix.push(temp);
 				}
+
+				//TODO: Just use findFrequencies for this
 
 				allValues = []
 
@@ -286,6 +302,10 @@
 
 			//sort the values in decending order of frequency
 			values.sort((v0, v1) => freqs[v1] - freqs[v0]);
+
+
+			//TODO: Move this to a seperate function or make it depend
+			//      on a flag
 
 			if (freqs[values[0]] != freqs[values[1]]) {
 				CORRECT_RESPONSES.unshift(values[0]);
@@ -600,7 +620,9 @@
 			GRAPH_TYPE.length = 0;
 
 			//clear out the event queue
-			EVENT_QUEUE.clear();
+			EVENT_QUEUE = new EventQueue(START_ROWS,
+																	 START_COLS, 
+																	 START_DELTA);
 
 			//continue on with the new game
 			main();
@@ -621,11 +643,12 @@
 			"Pie Chart": plotPieChart,
 			"Bar Graph": plotBarGraph
 		};
-		var EVENT_QUEUE = new EventQueue();
+		var EVENT_QUEUE = new EventQueue(START_ROWS,
+		                                 START_COLS, 
+		                                 START_DELTA);
+
 
 		function main() {
-			//EVENT_QUEUE.populate();
-
 			//display instructions
 			document.getElementById('directions').innerHTML = "Find the mode (the most common number) in the graph below. Options are " + MIN + " to " + MAX + "\.";
 
