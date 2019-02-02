@@ -26,7 +26,7 @@ The associated files in the GitHub repository can be hosted on a server and acce
 
 ## Authors
 
-* ahallak
+* Amjed Hallak
 * sestrobel
 * Joy Kitson
 * KMeyerUD
