@@ -28,7 +28,7 @@ The associated files in the GitHub repository can be hosted on a server and acce
 
 * ahallak
 * sestrobel
-* joy-kitson
+* Joy Kitson
 * KMeyerUD
 
 ## License
