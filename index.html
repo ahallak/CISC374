@@ -19,9 +19,6 @@
 
 
 <script>
-	//about javascript synchronous/asynchronous
-	//https://stackoverflow.com/questions/2035645/when-is-javascript-synchronous
-	//as a note, setTimeout does NOT stop the code below it from running.
 	window.onload = function() {
 		/***************
 		*  CONSTANTS  *
@@ -39,14 +36,13 @@
 		const START_DELTA = 2;
 
 		//sets how long the visuals will be displayed
-		const WAIT_MILLIS = 5000;
-		//const WAIT_MILLIS = 1000;
+		const WAIT_MILLIS = 5000; //5 seconds
 
-		//name of graph
+		//HTML ids for where we're plotting the charts
 		const NAME = 'table';
 		const RESULT_NAME = 'results';
 
-		//constants of the name of strings
+		//constants of the name displayed in the UI for the chart types
 		const GRID_STRING = "Plain Grid";
 		const HEAT_STRING = "Heat Map";
 		const BAR_STRING = "Bar Graph";
@@ -63,7 +59,11 @@
 
 		//encapsilates information about an event to place in the queue
 		function Event(run, shouldReadyNext) {
-			//0 argument function to be run by EVENT_QUEUE
+			//function to be run by EVENT_QUEUE - currently will
+			//recieve a number of rows and a number of columns as args
+			// - possibly should shift to having the list of args
+			//   as a field in Event, since one function placed in the queue
+			//   (clearVis) don't use these args
 			this.run = run;
 
 			//boolean indicating whether or not to ready the function after
@@ -75,7 +75,7 @@
 		function EventQueue(rows, cols, sizeDelta) {
 			self = this;
 
-			//sets the size of the generated dataset
+			//sets the initial size of the generated dataset
 			this.rows = rows;
 			this.cols = cols;
 
@@ -127,6 +127,10 @@
 
 					//console.log(i + "eventboi");
 
+					//TODO: find a more flexible way to deal with clearing the
+					//      heatmap's legend...and also merge the practically identical
+					//      functions postfoxed by HM
+
 					//...and a call to clear it
 					if (i == GRID_STRING) { //since heatmap is after grid**** hardcoded
 						EVENT_QUEUE.addEvent(new Event(clearVisHM, false));
@@ -157,12 +161,14 @@
 		{
 			breakLoop = false;
 
+			//keep generating data until there are no ties for the mode
 			while(!breakLoop)
 			{
 
 				//console.log(cols, rows);
 				var matrix = [];
 
+				//
 				for (i = 0; i < rows; i++)
 				{
 					temp = [];
@@ -173,7 +179,9 @@
 					matrix.push(temp);
 				}
 
-				//TODO: Just use findFrequencies for this
+				//TODO: Just use findFrequencies to do this
+
+				//finds the frequency of each values
 
 				allValues = []
 
@@ -286,10 +294,15 @@
 			return matrix;
 		}
 
+		//returns an object with the values in the given matrix/2D array
+		//as keys and the number of time that key occurs in valueArray
+		//as values. Also currently adds the most common value to the
+		//CORRECT_RESPONSES array
 		findFrequencies = function(valueArray) {
 			//count the occurences of each value
 			let freqs = {};
 			let values = [];
+
 			valueArray.forEach(function(subarr) {
 				subarr.forEach(function(el) {
 					if (el in freqs) {
@@ -304,19 +317,23 @@
 			//sort the values in decending order of frequency
 			values.sort((v0, v1) => freqs[v1] - freqs[v0]);
 
-
 			//TODO: Move this to a seperate function or make it depend
 			//      on a flag
 
+			//NOTE: This check isn't really neccessary now that we don't allow ties
+
+			//records either the mode, or in the case of a tie, '=' as the most reccent
+			//correct response
 			if (freqs[values[0]] != freqs[values[1]]) {
 				CORRECT_RESPONSES.unshift(values[0]);
 			} else {
 				CORRECT_RESPONSES.unshift("="); //TODO figure out a better system for ties
 			}
+
 			return freqs;
 		}
 
-		//plots a table of default size in the default range
+		//plots a rows by cols table of random values in the default range
 		plotRandTable = function(rows, cols) {
 
 			//console.log("plotting " + rows + " by " + cols + " table");
@@ -327,6 +344,8 @@
 			findFrequencies(valueArray);
 			GRAPH_TYPE.unshift(GRID_STRING);
 
+			//put the last element in each column in the header of the table,
+			//since plotly.js won't let us remove the header properly
 			let valueHeader = [];
 			valueArray.forEach(function(subarr) {
 				valueHeader.push(subarr.pop());
@@ -358,6 +377,8 @@
 			Plotly.plot(NAME, tableParams);
 		}
 
+		//plots a rows by cols matrix of random values in the default range
+		//as a heatmap
 		plotHeatMap = function(rows, cols) {
 			let valueArray = matrixGen(rows, cols, MIN, MAX);
 
@@ -388,6 +409,8 @@
 			Plotly.newPlot(NAME, data, layout);
 		}
 
+		//plots the frequencies of values from a rows by cols matrix 
+		//of random values in the default range in a bar chart
 		plotBarGraph = function(rows, cols) {
 			let valueArray = matrixGen(rows, cols, MIN, MAX);
 
@@ -413,6 +436,8 @@
 			Plotly.newPlot(NAME, data);
 		}
 
+		//plots the frequencies of values from a rows by cols matrix 
+		//of random values in the default range in a pie chart
 		plotPieChart = function(rows, cols) {
 
 			let valueArray = matrixGen(rows, cols, MIN, MAX);
@@ -461,6 +486,8 @@
 		//shows the player a comparision between their responses
 		//and the correct ones
 		displayResponses = function() {
+
+			//TODO: Make sure input is an int in [MIN, MAX]
 			var inputobj = document.getElementById('usertext').value;
 			if (inputobj.length > 2) {
 				alert("Enter a realistic guess.");
@@ -494,10 +521,11 @@
 			}
 		}
 
+		//TODO: merge this back together with displayResponses
+
 		//when the user submits a guess, this function is called.
 		//shows the player a comparision between their responses
-		//and the correct ones
-		//before heatmap
+		//and the correct ones before heatmap
 		displayResponsesHM = function() {
 			var inputobj = document.getElementById('usertext').value;
 			if (inputobj.length > 2) {
@@ -543,6 +571,8 @@
 				EVENT_QUEUE.runNext();
 			};
 		}
+		
+		//TODO: merge this back together with resumeGame
 
 		//when the user resumes the game, this function is called.
 		//before heatmap
@@ -563,8 +593,6 @@
 			document.getElementById('directions').innerHTML = "";
 			Plotly.purge(RESULT_NAME);
 
-			//GRAPH_TYPE.unshift(BAR_STRING);
-
 			//let their score be their success rate, for now
 			score = {};
 			num = {};
@@ -574,6 +602,8 @@
 				num[key] = 0;
 			}
 
+			//count the number of times each chart type was used
+			//and how many responses were correct for each chart type
 			for (i in RESPONSES) {
 				let key = GRAPH_TYPE[i];
 				if (RESPONSES[i] == CORRECT_RESPONSES[i]) {
@@ -589,12 +619,15 @@
 			//console.log(score);
 			//console.log(num);
 
+			//convert to precentages (Kids love percentages!)
 			for (key in PLOTS) {
 				if (num[key] != 0) {
 					score[key] = 100.0 * score[key] / num[key];
 				}
 			}
 
+			//add the scores to the data for the results chart
+			//and the textual score displayed below it
 			let scorestring = "";
 			let x = [];
 			let y = [];
@@ -615,6 +648,10 @@
 			let layout = {
 				yaxis: {range: [0, 100]},
 				
+				//TODO: make this flexible enough that the icons are displayed
+				//      below the correct chart type even if PLOTS is rearranged
+
+				//puts icons below each score in the results chart
 				images: [
 					{
 					x: 0,
@@ -675,6 +712,7 @@
 			"<button onclick='restartGame()'>Restart game</button>";
 		}
 
+		//resets everything so that the player can start afresh
 		restartGame = function() {
 			Plotly.purge(NAME);
 			//clear out the screen
@@ -710,7 +748,8 @@
 			"Pie Chart": plotPieChart,
 			"Bar Graph": plotBarGraph
 		};
-		
+	
+		//deals with asynchronous event calls	
 		var EVENT_QUEUE = new EventQueue(START_ROWS,
 		                                 START_COLS, 
 		                                 START_DELTA);
